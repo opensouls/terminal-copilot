@@ -35,7 +35,6 @@ That directory contains the following files:
 The user has the following environment variables set:
 HOME={os.environ["HOME"]}
 USER={os.environ["USER"]}
-PWD={os.environ["PWD"]}
 SHELL={os.environ["SHELL"]}
 COMMAND_MODE={os.environ["COMMAND_MODE"]}
 
