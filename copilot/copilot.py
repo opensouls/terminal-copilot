@@ -65,6 +65,7 @@ def main():
     parser.add_argument(
         "command",
         type=str,
+        nargs="+",
         help="Describe the command you are looking for in quotes",
     )
     parser.add_argument(
@@ -72,7 +73,7 @@ def main():
     )
     args = parser.parse_args()
 
-    question = args.command
+    question = " ".join(args.command)
 
     if args.verbose:
         print("Verbose mode enabled")
