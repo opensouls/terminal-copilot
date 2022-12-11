@@ -68,8 +68,8 @@ The command the user is looking for is:
     print("The command you are looking for is:")
     print(response)
 
-    user_respons = input("Is this the command you are looking for? (y/n)")
-    if user_respons == 'y':
+    user_respons = input("Is this the command you are looking for? Enter to copy to clipboard, n to try again:")
+    if user_respons == "" or user_respons == "y" or user_respons == "yes":
         # copy the command to the clipboard
         subprocess.run(["pbcopy"], input=response, encoding="utf-8")
         print("The command has been copied to the clipboard")
