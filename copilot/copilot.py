@@ -7,13 +7,14 @@ import openai
 import os
 
 
-def main(argv):
-    parser = argparse.ArgumentParser(description='Terminal Copilot')
+def main():
+    parser = argparse.ArgumentParser(prog='copilot', description='Terminal Copilot')
     parser.add_argument('command', type=str, nargs='+',
                         help='Describe the command you are looking for.')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='increase output verbosity')  
-    args = parser.parse_args(args=argv)
+    args = parser.parse_args()
+
     if args.verbose:
         print("Verbose mode enabled")
     
@@ -61,7 +62,16 @@ The command the user is looking for is:
         frequency_penalty=0,
         presence_penalty=0
     )
-    print(response.choices[0].text)
+    # strip all whitespace from the response start or end
+    response = response.choices[0].text.strip()
 
-if __name__ == "__main__":
-    main(sys.argv[1:])
+    print("The command you are looking for is:")
+    print(response)
+
+    user_respons = input("Is this the command you are looking for? (y/n)")
+    if user_respons == 'y':
+        # copy the command to the clipboard
+        subprocess.run(["pbcopy"], input=response, encoding="utf-8")
+        print("The command has been copied to the clipboard")
+    else:
+        print("Try again with a more descriptive expleanation of the command you are looking for")
