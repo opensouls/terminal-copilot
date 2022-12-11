@@ -22,6 +22,12 @@ def main():
     # TODO to get more terminal context to work with..
     # TODO save history of previous user questions and answers
 
+    keys = ["HOME", "USER", "SHELL"]
+    environs = ""
+    for key in keys:
+        if key in os.environ:
+            environs += f"{key}={os.environ[key]}\n"
+
     prompt = f"""
 You are an AI Terminal Copilot. Your job is to help users find the right terminal command in a zsh shell on mac os.
 
@@ -33,11 +39,7 @@ The user is currently in the following directory:
 That directory contains the following files:
 {subprocess.run(["ls"], capture_output=True).stdout.decode("utf-8")}
 The user has the following environment variables set:
-HOME={os.environ["HOME"]}
-USER={os.environ["USER"]}
-SHELL={os.environ["SHELL"]}
-COMMAND_MODE={os.environ["COMMAND_MODE"]}
-
+{environs}
 The user has the following aliases set:
 {subprocess.run(["alias"], capture_output=True).stdout.decode("utf-8")}
 
