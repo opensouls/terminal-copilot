@@ -4,8 +4,7 @@ import argparse
 import subprocess
 import openai
 import os
-from simple_term_menu import TerminalMenu
-
+from simple_term_menu import TerminalMenu    
 
 def main():
     parser = argparse.ArgumentParser(prog='copilot', description='Terminal Copilot')
@@ -13,6 +12,8 @@ def main():
                         help='Describe the command you are looking for.')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='increase output verbosity')
+    parser.add_argument('system', type=str, default='ubuntu',
+                        help='ubuntu/macOS')
     args = parser.parse_args()
 
     if args.verbose:
@@ -28,8 +29,11 @@ def main():
         if key in os.environ:
             environs += f"{key}={os.environ[key]}\n"
 
+    prompt_details = {"macOS": ["zsh shell on mac os", f"{subprocess.run(["alias"], capture_output=True).stdout.decode("utf-8")}"],
+                      "ubuntu": ["bash shell on ubuntu", f"{subprocess.run(['bash', '-c', '-i', 'alias'], capture_output=True).stdout.decode("utf-8")}"]}
+    
     prompt = f"""
-You are an AI Terminal Copilot. Your job is to help users find the right terminal command in a zsh shell on mac os.
+You are an AI Terminal Copilot. Your job is to help users find the right terminal command in a {prompt_details[args.system][0]}.
 
 The user is asking for the following command:
 {" ".join(args.command)}
@@ -41,7 +45,7 @@ That directory contains the following files:
 The user has the following environment variables set:
 {environs}
 The user has the following aliases set:
-{subprocess.run(["alias"], capture_output=True).stdout.decode("utf-8")}
+{prompt_details[args.system][1]}
 
 The command the user is looking for is:
 
