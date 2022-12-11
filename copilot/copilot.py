@@ -1,10 +1,10 @@
 # Program to serve as a terminal copilot for the user
 import sys
 import argparse
-import os
 import subprocess
 import openai
 import os
+from simple_term_menu import TerminalMenu
 
 
 def main():
@@ -63,15 +63,10 @@ The command the user is looking for is:
         presence_penalty=0
     )
     # strip all whitespace from the response start or end
-    response = response.choices[0].text.strip()
-
-    print("The command you are looking for is:")
-    print(response)
-
-    user_respons = input("Is this the command you are looking for? (y/n)")
-    if user_respons == 'y':
-        # copy the command to the clipboard
-        subprocess.run(["pbcopy"], input=response, encoding="utf-8")
-        print("The command has been copied to the clipboard")
-    else:
-        print("Try again with a more descriptive expleanation of the command you are looking for")
+    cmd = response.choices[0].text.strip()
+    options = [cmd]
+    terminal_menu = TerminalMenu(options)
+    menu_entry_index = terminal_menu.show()
+    if menu_entry_index == 0:
+        print(">", cmd)
+        os.system(cmd)
