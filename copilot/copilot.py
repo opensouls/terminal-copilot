@@ -35,7 +35,7 @@ def call_openai(prompt, verbose=False):
     responses = [c.text.strip() for c in response.choices]
     return responses
 
-def construct_prompt(question, history):
+def construct_prompt(question):
     prompt = f"""
 You are an AI Terminal Copilot. Your job is to help users find the right terminal command in a zsh shell.
 
