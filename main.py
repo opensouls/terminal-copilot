@@ -19,10 +19,7 @@ def main(argv):
     
     # run history -40 to get the last 40 commands
     # TODO to get more terminal context to work with..
-    print({subprocess.run(["pwd"], capture_output=True).stdout.decode("utf-8")})
-    print({subprocess.run(["ls"], capture_output=True).stdout.decode("utf-8")})
-    print({subprocess.run(["env"], capture_output=True).stdout.decode("utf-8")})
-    print({subprocess.run(["alias"], capture_output=True).stdout.decode("utf-8")})
+    # TODO save history of previous user questions and answers
 
     prompt = f"""
 You are an AI Terminal Copilot. Your job is to help users find the right terminal command in a zsh shell on mac os.
