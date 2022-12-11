@@ -86,7 +86,6 @@ def main():
     print(f"You have selected {responses[menu_entry_index]}!")
     subprocess.run(["pbcopy"], input=responses[menu_entry_index], encoding="utf-8")
     print("The command has been copied to the clipboard")
-    print(os.environ.keys())
     # exit with exit code 0
     sys.exit(0)
     
