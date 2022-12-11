@@ -29,7 +29,7 @@ Thank you for considering contributing to terminal-copilot! Together, we can mak
 
 ### Local Installation
 1. Clone the repo
-2. python -m venv venv && source venv/bin/activate && pip install -r requirements.txt
+2. python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
 3. python setup.py install
 
 ### Packaging for PyPi
