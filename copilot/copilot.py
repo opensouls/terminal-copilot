@@ -33,7 +33,12 @@ The user is currently in the following directory:
 That directory contains the following files:
 {subprocess.run(["ls"], capture_output=True).stdout.decode("utf-8")}
 The user has the following environment variables set:
-{os.environ.keys()}
+HOME={os.environ["HOME"]}
+USER={os.environ["USER"]}
+PWD={os.environ["PWD"]}
+SHELL={os.environ["SHELL"]}
+COMMAND_MODE={os.environ["COMMAND_MODE"]}
+
 The user has the following aliases set:
 {subprocess.run(["alias"], capture_output=True).stdout.decode("utf-8")}
 
