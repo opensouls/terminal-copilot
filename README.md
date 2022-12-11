@@ -29,13 +29,8 @@ Thank you for considering contributing to terminal-copilot! Together, we can mak
 
 ### Local Installation
 1. Clone the repo
-<<<<<<< HEAD
-2. python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
-3. python setup.py install
-=======
-2. `python -m venv venv && source venv/bin/activate && pip install -r requirements.txt`
+2. `python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt`
 3. `python setup.py install`
->>>>>>> origin/main
 
 ### Packaging for PyPi
 1. `python setup.py sdist bdist_wheel`
