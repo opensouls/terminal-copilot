@@ -7,7 +7,7 @@ long_description = "terminal-copilot"
 
 setup(
         name ='terminal-copilot',
-        version ='1.0.0',
+        version ='1.0.1',
         author ='Methexis',
         author_email ='joelkronander@gmail.com',
         url ='https://github.com/Methexis-Inc/terminal-copilot',
@@ -23,8 +23,8 @@ setup(
         },
         classifiers =(
             "Programming Language :: Python :: 3",
-            "License :: OSI Approved :: Apache Software License",
-            "Operating System :: OS Independent",
+            "License :: OSI Approved :: Apache Software License 2.0",
+            "Operating System :: MacOS :: Linux",
         ),
         keywords ='terminal copilot goldfish memory openai gpt3',
         install_requires = requirements,
