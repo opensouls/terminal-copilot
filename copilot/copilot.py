@@ -1,11 +1,9 @@
 # Program to serve as a terminal copilot for the user
 import sys
 import argparse
-import os
 import subprocess
 import openai
 import os
-
 from simple_term_menu import TerminalMenu
 
 
@@ -54,16 +52,7 @@ The user has the following environment variables set:
 {os.environ.keys()}
 The user has the following aliases set:
 {subprocess.run(["alias"], capture_output=True).stdout.decode("utf-8")}
-"""
 
-    if history:
-        prompt += f"""
-You previously suggested the following commands:
-{history[question]}
-but the user said that was not the command they were looking for. Don't propose those commands again.
-"""
-
-    prompt += """
 The command the user is looking for is:
 
 """
@@ -88,7 +77,7 @@ def main():
     # TODO to get more terminal context to work with..
     # TODO save history of previous user questions and answers
 
-    prompt = construct_prompt(question, None)
+    prompt = construct_prompt(question)
     responses = call_openai(prompt, verbose=args.verbose)
     print("The command you are looking for is:")
     
@@ -103,3 +92,10 @@ def main():
 
 if __name__ == "__main__":
     main()
+    cmd = response.choices[0].text.strip()
+    options = [cmd]
+    terminal_menu = TerminalMenu(options)
+    menu_entry_index = terminal_menu.show()
+    if menu_entry_index == 0:
+        print(">", cmd)
+        os.system(cmd)
