@@ -4,7 +4,7 @@ Are you tired of Googling basic terminal commands every time you forget the synt
 With terminal-copilot, you can quickly and easily access commonly used terminal commands right from the command line. Simply type copilot followed by your question and let terminal-copilot do the rest.
 
 For example, if you want to find a file ending in .txt, simply type:
-```copilot how do I find a file ending in .txt?```
+```copilot find a file ending in .txt```
 terminal-copilot will then display the correct syntax for the command you need:
 ```find . -name "*.txt"```
 ### Installation
