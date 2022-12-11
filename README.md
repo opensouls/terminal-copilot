@@ -1,2 +1,2 @@
 # terminal-copilot
-The perfect told for a goldfish using a zsh terminal
+The perfect tool for a goldfish using a zsh terminal
