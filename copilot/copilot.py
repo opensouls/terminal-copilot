@@ -35,6 +35,7 @@ def call_openai(prompt, verbose=False):
     responses = [c.text.strip() for c in response.choices]
     return responses
 
+
 def construct_prompt(question):
     prompt = f"""
 You are an AI Terminal Copilot. Your job is to help users find the right terminal command in a zsh shell.
@@ -58,10 +59,13 @@ The command the user is looking for is:
 """
     return prompt
 
+
 def main():
     parser = argparse.ArgumentParser(prog="copilot", description="Terminal Copilot")
     parser.add_argument(
-        "command", type=str, help="Describe the command you are looking for in quotes", 
+        "command",
+        type=str,
+        help="Describe the command you are looking for in quotes",
     )
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="increase output verbosity"
@@ -80,22 +84,16 @@ def main():
     prompt = construct_prompt(question)
     responses = call_openai(prompt, verbose=args.verbose)
     print("The command you are looking for is:")
-    
+
     terminal_menu = TerminalMenu(responses)
     menu_entry_index = terminal_menu.show()
     print(f"You have selected {responses[menu_entry_index]}!")
+    # os.system(responses[menu_entry_index])
     subprocess.run(["pbcopy"], input=responses[menu_entry_index], encoding="utf-8")
     print("The command has been copied to the clipboard")
     # exit with exit code 0
     sys.exit(0)
-    
+
 
 if __name__ == "__main__":
     main()
-    cmd = response.choices[0].text.strip()
-    options = [cmd]
-    terminal_menu = TerminalMenu(options)
-    menu_entry_index = terminal_menu.show()
-    if menu_entry_index == 0:
-        print(">", cmd)
-        os.system(cmd)
