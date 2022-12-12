@@ -36,19 +36,19 @@ def main():
 You are an AI Terminal Copilot. Your job is to help users find the right terminal command in a {shell} on {operating_system}.
 
 The user is asking for the following command:
-{" ".join(args.command)}
+'{" ".join(args.command)}'
 
 The user is currently in the following directory:
 {subprocess.run(["pwd"], capture_output=True).stdout.decode("utf-8")}
 That directory contains the following files:
 {subprocess.run(["ls"], capture_output=True).stdout.decode("utf-8")}
-The user has the following environment variables set:
+The user has several environment variables set, some of which are:
 {environs}
 The user has the following aliases set:
 {subprocess.run(["alias"], capture_output=True, shell=True).stdout.decode("utf-8")}
 
 The command the user is looking for is:
-
+`
 """
 
     if args.verbose:
@@ -58,10 +58,10 @@ The command the user is looking for is:
     # Call openai api to get the command completion
     openai.api_key = os.environ.get("OPENAI_API_KEY")
     if openai.api_key is None:
-        print("Please set OPENAI_API_KEY environment variable")
+        print("To use copilo please set the OPENAI_API_KEY environment variable")
         print("You can get an API key from https://beta.openai.com/account/api-keys")
         print("To set the environment variable, run:")
-        print("export OPENAI_API_KEY = <your key>")
+        print("export OPENAI_API_KEY=<your key>")
         sys.exit(1)
     response = openai.Completion.create(
         model="text-davinci-003",
@@ -69,13 +69,14 @@ The command the user is looking for is:
         temperature=0.7,
         max_tokens=256,
         top_p=1,
+        stop=["`"],
         frequency_penalty=0,
         presence_penalty=0
     )
     # strip all whitespace from the response start or end
     cmd = response.choices[0].text.strip()
     print(f"\033[94m> {cmd}\033[0m")
-    options = ["execute", "copy"]
+    options = ["execute", "copy", "explain"]
     terminal_menu = TerminalMenu(options)
     menu_entry_index = terminal_menu.show()
     if menu_entry_index == 0:
@@ -83,3 +84,6 @@ The command the user is looking for is:
     elif menu_entry_index == 1:
         print("> copied")
         subprocess.run(["pbcopy"], input=cmd, encoding="utf-8")
+    elif menu_entry_index == 2:
+        print("> explain")
+        subprocess.run(["open", "https://explainshell.com/explain?cmd=" + cmd])
