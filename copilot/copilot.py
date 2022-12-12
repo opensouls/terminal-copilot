@@ -4,6 +4,7 @@ import argparse
 import subprocess
 import openai
 import os
+from urllib.parse import quote
 from simple_term_menu import TerminalMenu
 
 
@@ -11,8 +12,11 @@ def main():
     parser = argparse.ArgumentParser(prog='copilot', description='Terminal Copilot')
     parser.add_argument('command', type=str, nargs='+',
                         help='Describe the command you are looking for.')
+    parser.add_argument('-a', '--with-aliases', action='store_true',
+                        help='include aliases in the prompt')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='increase output verbosity')
+
     args = parser.parse_args()
 
     if args.verbose:
@@ -70,7 +74,7 @@ The command the user is looking for is:
     # strip all whitespace from the response start or end
     cmd = response.choices[0].text.strip()
     print(f"\033[94m> {cmd}\033[0m")
-    options = ["execute", "copy", "explain"]
+    options = ["execute", "copy", "explainshell"]
     terminal_menu = TerminalMenu(options)
     menu_entry_index = terminal_menu.show()
     if menu_entry_index == 0:
@@ -79,5 +83,6 @@ The command the user is looking for is:
         print("> copied")
         subprocess.run(["pbcopy"], input=cmd, encoding="utf-8")
     elif menu_entry_index == 2:
-        print("> explain")
-        subprocess.run(["open", "https://explainshell.com/explain?cmd=" + cmd])
+        link = "https://explainshell.com/explain?cmd=" + quote(cmd)
+        print("> explainshell: " + link)
+        subprocess.run(["open", "https://explainshell.com/explain?cmd=" + quote(cmd)])
