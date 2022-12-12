@@ -6,6 +6,7 @@ import openai
 import os
 from urllib.parse import quote
 from simple_term_menu import TerminalMenu
+import platform
 
 
 def main():
@@ -32,8 +33,11 @@ def main():
         if key in os.environ:
             environs += f"{key}={os.environ[key]}\n"
 
+    shell = os.environ["SHELL"]
+    operating_system = platform.system()
+
     prompt = f"""
-You are an AI Terminal Copilot. Your job is to help users find the right terminal command in a zsh shell on mac os.
+You are an AI Terminal Copilot. Your job is to help users find the right terminal command in a {shell} on {operating_system}.
 
 The user is asking for the following command:
 '{" ".join(args.command)}'
@@ -44,6 +48,8 @@ That directory contains the following files:
 {subprocess.run(["ls"], capture_output=True).stdout.decode("utf-8")}
 The user has several environment variables set, some of which are:
 {environs}
+The user has the following aliases set:
+{subprocess.run(["alias"], capture_output=True, shell=True).stdout.decode("utf-8")}
 
 The command the user is looking for is:
 `
