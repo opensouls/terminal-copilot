@@ -48,8 +48,13 @@ That directory contains the following files:
 {subprocess.run(["ls"], capture_output=True).stdout.decode("utf-8")}
 The user has several environment variables set, some of which are:
 {environs}
+"""
+    if args.with_aliases:
+        prompt += f"""
 The user has the following aliases set:
 {subprocess.run(["alias"], capture_output=True, shell=True).stdout.decode("utf-8")}
+"""
+    prompt += """
 
 The command the user is looking for is:
 `
