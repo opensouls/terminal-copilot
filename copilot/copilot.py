@@ -70,7 +70,7 @@ The command the user is looking for is:
     # strip all whitespace from the response start or end
     cmd = response.choices[0].text.strip()
     print(f"\033[94m> {cmd}\033[0m")
-    options = ["execute", "copy"]
+    options = ["execute", "copy", "explain"]
     terminal_menu = TerminalMenu(options)
     menu_entry_index = terminal_menu.show()
     if menu_entry_index == 0:
@@ -78,3 +78,6 @@ The command the user is looking for is:
     elif menu_entry_index == 1:
         print("> copied")
         subprocess.run(["pbcopy"], input=cmd, encoding="utf-8")
+    elif menu_entry_index == 2:
+        print("> explain")
+        subprocess.run(["open", "https://explainshell.com/explain?cmd=" + cmd])
