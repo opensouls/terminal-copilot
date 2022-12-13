@@ -1,12 +1,17 @@
-# Terminal-copilot
-Are you tired of Googling basic terminal commands every time you forget the syntax? Look no further! terminal-copilot is here to help.
+[![PyPI version](https://badge.fury.io/py/terminal-copilot.svg)](https://badge.fury.io/py/terminal-copilot)
 
-With terminal-copilot, you can quickly and easily access commonly used terminal commands right from the command line. Simply type copilot followed by your question and let terminal-copilot do the rest.
+# Terminal-copilot
+Are you tired of Googling basic terminal commands every time you forget the syntax? 
+Look no further! terminal-copilot is here to help.
+
+With terminal-copilot, you can quickly and easily access commonly used terminal commands right from the command line. Simply type copilot followed by your desired command in natural language and let terminal-copilot do the rest.
 
 For example, if you want to find a file ending in .txt, simply type:
 ```copilot find a file ending in .txt```
 terminal-copilot will then display the correct syntax for the command you need:
 ```find . -name "*.txt"```
+With options to execute, copy, or explain the proposed terminal command.
+
 ### Installation
 To use terminal-copilot, you must first install it on your system. The easiest way to do this is using pip:
 ```pip install terminal-copilot```
