@@ -1,7 +1,7 @@
 [![PyPI version](https://badge.fury.io/py/terminal-copilot.svg)](https://badge.fury.io/py/terminal-copilot)
 
 # Terminal-copilot
-Are you tired of Googling basic terminal commands every time you forget the syntax? 
+Are you tired of Googling basic terminal commands every time you forget the syntax?\n
 Look no further! terminal-copilot is here to help.
 
 With terminal-copilot, you can quickly and easily access commonly used terminal commands right from the command line. Simply type copilot followed by your desired command in natural language and let terminal-copilot do the rest.
