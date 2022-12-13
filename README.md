@@ -26,6 +26,9 @@ Here are some examples of how you can use terminal-copilot:
 3. `copilot install the openai package for python`
 4. `copilot clean up my docker images`
 
+### Requirements
+Python 3.7+
+
 ## Development
 ### Contributing
 We welcome contributions to terminal-copilot! If you have an idea for a new feature or have found a bug, please open an issue. If you would like to contribute code, please open a pull request!
@@ -40,3 +43,4 @@ Thank you for considering contributing to terminal-copilot! Together, we can mak
 ### Packaging for PyPi
 1. `python setup.py sdist bdist_wheel`
 2. `twine upload dist/*`
+
