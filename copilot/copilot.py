@@ -67,7 +67,7 @@ The command the user is looking for is:
     # Call openai api to get the command completion
     openai.api_key = os.environ.get("OPENAI_API_KEY")
     if openai.api_key is None:
-        print("To use copilo please set the OPENAI_API_KEY environment variable")
+        print("To use copilot please set the OPENAI_API_KEY environment variable")
         print("You can get an API key from https://beta.openai.com/account/api-keys")
         print("To set the environment variable, run:")
         print("export OPENAI_API_KEY=<your key>")
