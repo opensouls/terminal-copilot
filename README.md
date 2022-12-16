@@ -27,7 +27,7 @@ Here are some examples of how you can use terminal-copilot:
 4. `copilot clean up my docker images`
 
 ### Requirements
-Python 3.7+
+Python 3.7+ 
 
 ## Development
 ### Contributing
