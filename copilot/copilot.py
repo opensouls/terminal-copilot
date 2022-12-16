@@ -3,6 +3,7 @@ import sys
 import argparse
 import subprocess
 import openai
+import pyperclip
 import os
 from urllib.parse import quote
 from simple_term_menu import TerminalMenu
@@ -92,7 +93,7 @@ The command the user is looking for is:
         os.system(cmd)
     elif menu_entry_index == 1:
         print("> copied")
-        subprocess.run(["pbcopy"], input=cmd, encoding="utf-8")
+        pyperclip.copy(cmd)
     elif menu_entry_index == 2:
         link = "https://explainshell.com/explain?cmd=" + quote(cmd)
         print("> explainshell: " + link)
