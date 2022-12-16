@@ -31,7 +31,7 @@ Here are some examples of how you can use terminal-copilot:
 
 setup(
         name ='terminal-copilot',
-        version ='1.0.7',
+        version ='1.0.9',
         author ='Methexis',
         author_email ='joelkronander@gmail.com',
         url ='https://github.com/Methexis-Inc/terminal-copilot',
