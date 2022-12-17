@@ -24,6 +24,7 @@ def main():
     if args.verbose:
         print("Verbose mode enabled")
 
+    # run history -40 to get the last 40 commands
     # TODO to get more terminal context to work with..
     # TODO save history of previous user questions and answers
 
@@ -121,7 +122,3 @@ def request_cmds(prompt, n=1):
 
 def strip_all_whitespaces_from(choices):
     return [choice.text.strip() for choice in choices]
-
-
-if __name__ == "__main__":
-    main()
