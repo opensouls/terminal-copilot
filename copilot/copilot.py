@@ -9,6 +9,7 @@ from urllib.parse import quote
 from simple_term_menu import TerminalMenu
 import platform
 
+import history
 
 def main():
     parser = argparse.ArgumentParser(prog='copilot', description='Terminal Copilot')
@@ -24,7 +25,6 @@ def main():
     if args.verbose:
         print("Verbose mode enabled")
 
-    # run history -40 to get the last 40 commands
     # TODO to get more terminal context to work with..
     # TODO save history of previous user questions and answers
 
@@ -47,6 +47,7 @@ The user is currently in the following directory:
 {subprocess.run(["pwd"], capture_output=True).stdout.decode("utf-8")}
 That directory contains the following files:
 {subprocess.run(["ls"], capture_output=True).stdout.decode("utf-8")}
+{history.get_history()}
 The user has several environment variables set, some of which are:
 {environs}
 """
@@ -98,3 +99,7 @@ The command the user is looking for is:
         link = "https://explainshell.com/explain?cmd=" + quote(cmd)
         print("> explainshell: " + link)
         subprocess.run(["open", "https://explainshell.com/explain?cmd=" + quote(cmd)])
+
+
+if __name__ == "__main__":
+    main()
