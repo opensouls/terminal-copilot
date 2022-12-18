@@ -38,8 +38,11 @@ def main():
         if key in os.environ:
             environs += f"{key}={os.environ[key]}\n"
 
-    shell = os.environ["SHELL"]
     operating_system = platform.system()
+    if operating_system.lower().startswith("lin") or operating_system.lower().startswith("dar"):
+        shell = os.environ.get("SHELL")
+    elif operating_system.lower().startswith("win"):
+        shell = "cmd"
 
     prompt = f"""
 You are an AI Terminal Copilot. Your job is to help users find the right terminal command in a {shell} on {operating_system}.
