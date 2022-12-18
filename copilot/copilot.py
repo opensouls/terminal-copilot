@@ -11,7 +11,7 @@ import platform
 if platform.system().lower().startswith("lin") or platform.system().lower().startswith("dar"):
     from simple_term_menu import TerminalMenu
 elif platform.system().lower().startswith("win"):
-    from inquirer import prompt, List
+    import inquirer
 
 
 def main():
@@ -106,12 +106,12 @@ The command the user is looking for is:
         menu_entry_index = terminal_menu.show()
     elif operating_system.lower().startswith("win"):
         questions = [
-            List('action',
+            inquirer.List('action',
                 message="Choose",
                 choices=options,
             ),
         ]
-        answer = prompt(questions)
+        answer = inquirer.prompt(questions)
         menu_entry_index = options.index(answer["action"])
     
     if menu_entry_index == 0:
