@@ -11,16 +11,17 @@ import platform
 
 import history
 
+
 def main():
     parser = argparse.ArgumentParser(prog='copilot', description='Terminal Copilot')
     parser.add_argument('command', type=str, nargs='+',
                         help='Describe the command you are looking for.')
     parser.add_argument('-a', '--with-aliases', action='store_true',
-                        help='include aliases in the prompt')
+                        help='Include aliases in the prompt. Note: This feature may potentially send sensitive information to OpenAI.')
     parser.add_argument('-v', '--verbose', action='store_true',
-                        help='increase output verbosity')
+                        help='Increase output verbosity.')
     parser.add_argument('-hist', '--history', action='store_true',
-                        help='include terminal history in the prompt')
+                        help='Include terminal history in the prompt. Note: This feature may potentially send sensitive information to OpenAI and increase the number of tokens used.')
 
     args = parser.parse_args()
 
