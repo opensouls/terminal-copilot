@@ -6,8 +6,12 @@ import openai
 import pyperclip
 import os
 from urllib.parse import quote
-from simple_term_menu import TerminalMenu
 import platform
+
+if platform.system().lower().startswith("lin") or platform.system().lower.startswith("dar"):
+    from simple_term_menu import TerminalMenu
+elif platform.system().lower().startswith("win"):
+    from inquirer import prompt, List
 
 
 def main():
@@ -86,9 +90,21 @@ The command the user is looking for is:
     # strip all whitespace from the response start or end
     cmd = response.choices[0].text.strip()
     print(f"\033[94m> {cmd}\033[0m")
+    
     options = ["execute", "copy", "explainshell"]
-    terminal_menu = TerminalMenu(options)
-    menu_entry_index = terminal_menu.show()
+    if operating_system.lower().startswith("lin") or operating_system.lower().startswith("dar"):
+        terminal_menu = TerminalMenu(options)
+        menu_entry_index = terminal_menu.show()
+    elif operating_system.lower().startswith("win"):
+        questions = [
+            List('action',
+                message="Choose",
+                choices=options,
+            ),
+        ]
+        answer = prompt(questions)
+        menu_entry_index = options.index(answer["action"])
+    
     if menu_entry_index == 0:
         os.system(cmd)
     elif menu_entry_index == 1:
