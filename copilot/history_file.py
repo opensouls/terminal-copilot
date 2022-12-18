@@ -1,4 +1,5 @@
 import os
+from time import time
 
 
 def _fish_history_file_location():
@@ -19,3 +20,15 @@ def fish_history_file_lines():
     with open(history_file, 'r') as history:
         lines = history.readlines()
         return lines
+
+
+def _get_history_line(command_script):
+    return u'- cmd: {}\n  when: {}\n'.format(command_script, int(time()))
+
+
+def save(cmd):
+    history_file = _fish_history_file_location()
+    if os.path.isfile(history_file):
+        with open(history_file, 'a') as history:
+            entry = _get_history_line(cmd)
+            history.write(entry)

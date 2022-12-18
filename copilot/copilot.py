@@ -19,6 +19,8 @@ def main():
                         help='include aliases in the prompt')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='increase output verbosity')
+    parser.add_argument('-hist', '--history', action='store_true',
+                        help='include terminal history in the prompt')
 
     args = parser.parse_args()
 
@@ -47,7 +49,7 @@ The user is currently in the following directory:
 {subprocess.run(["pwd"], capture_output=True).stdout.decode("utf-8")}
 That directory contains the following files:
 {subprocess.run(["ls"], capture_output=True).stdout.decode("utf-8")}
-{history.get_history()}
+{history.get_history() if args.history else ""}
 The user has several environment variables set, some of which are:
 {environs}
 """
@@ -77,13 +79,14 @@ The command the user is looking for is:
     cmd = request_cmds(prompt, n=1)[0]
     show_command_options(prompt, cmd)
 
+
 def show_command_options(prompt, cmd):
     print(f"\033[94m> {cmd}\033[0m")
     options = ["execute", "copy", "explainshell", "show more options"]
     terminal_menu = TerminalMenu(options)
     menu_entry_index = terminal_menu.show()
     if menu_entry_index == 0:
-        os.system(cmd)
+        execute(cmd)
     elif menu_entry_index == 1:
         print("> copied")
         pyperclip.copy(cmd)
@@ -93,6 +96,12 @@ def show_command_options(prompt, cmd):
         subprocess.run(["open", "https://explainshell.com/explain?cmd=" + quote(cmd)])
     elif menu_entry_index == 3:
         show_more_cmd_options(prompt)
+
+
+def execute(cmd):
+    os.system(cmd)
+    history.save(cmd)
+
 
 def show_more_cmd_options(prompt):
     cmds = request_cmds(prompt, n=5)

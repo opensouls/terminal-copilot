@@ -29,3 +29,7 @@ def get_history(history_context_size=40):
         return _fish_history(history_context_size)
     else:
         return ""
+
+
+def save(cmd):
+    history_file.save(cmd)
