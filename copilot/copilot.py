@@ -44,6 +44,18 @@ def main():
     elif operating_system.lower().startswith("win"):
         shell = "cmd"
 
+    # get the current directory
+    if operating_system.lower().startswith("lin") or operating_system.lower().startswith("dar"):
+        current_dir = subprocess.run(["pwd"], capture_output=True).stdout.decode("utf-8")
+    elif operating_system.lower().startswith("win"):
+        current_dir = subprocess.run(["cd"], capture_output=True).stdout.decode("utf-8")
+
+    # list the files in the current directory
+    if operating_system.lower().startswith("lin") or operating_system.lower().startswith("dar"):
+        directory_list = subprocess.run(["ls"], capture_output=True).stdout.decode("utf-8")
+    elif operating_system.lower().startswith("win"):
+        directory_list = subprocess.run(["dir"], capture_output=True).stdout.decode("utf-8")
+
     prompt = f"""
 You are an AI Terminal Copilot. Your job is to help users find the right terminal command in a {shell} on {operating_system}.
 
@@ -51,9 +63,9 @@ The user is asking for the following command:
 '{" ".join(args.command)}'
 
 The user is currently in the following directory:
-{subprocess.run(["pwd"], capture_output=True).stdout.decode("utf-8")}
+{current_dir}
 That directory contains the following files:
-{subprocess.run(["ls"], capture_output=True).stdout.decode("utf-8")}
+{directory_list}
 The user has several environment variables set, some of which are:
 {environs}
 """
