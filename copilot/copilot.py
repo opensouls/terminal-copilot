@@ -63,7 +63,7 @@ That directory contains the following files:
 The user has several environment variables set, some of which are:
 {environs}
 """
-    if args.with_aliases:
+    if args.with_aliases and operating_system.lower().startswith("lin") or operating_system.lower().startswith("dar"):
         prompt += f"""
 The user has the following aliases set:
 {subprocess.run(["alias"], capture_output=True, shell=True).stdout.decode("utf-8")}
