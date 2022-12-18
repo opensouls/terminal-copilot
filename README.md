@@ -26,6 +26,11 @@ Here are some examples of how you can use terminal-copilot:
 3. `copilot install the openai package for python`
 4. `copilot clean up my docker images`
 
+
+### Arguments
+
+- `-g`, `--git`: This flag enables the inclusion of Git context in the prompt sent to the OpenAI API. This can be useful for users working with Git repositories and may include the current branch name, repository status, recent commit messages, and file history.
+
 ### Requirements
 Python 3.7+ 
 

@@ -18,6 +18,8 @@ def main():
                         help='include aliases in the prompt')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='increase output verbosity')
+    parser.add_argument('-g', '--git', action='store_true',
+                        help='Include git info if available')
 
     args = parser.parse_args()
 
@@ -49,6 +51,7 @@ That directory contains the following files:
 {subprocess.run(["ls"], capture_output=True).stdout.decode("utf-8")}
 The user has several environment variables set, some of which are:
 {environs}
+{git_info() if args.git else ""}
 """
     if args.with_aliases:
         prompt += f"""
@@ -124,3 +127,23 @@ def request_cmds(prompt, n=1):
 
 def strip_all_whitespaces_from(choices):
     return [choice.text.strip() for choice in choices]
+
+
+def git_info():
+    git_installed = subprocess.run(["which", "git"], capture_output=True).returncode == 0
+    if os.path.exists(".git") and git_installed:
+        return f"""
+User is in a git repo.
+Branches are:
+{subprocess.run(["git", "branch"], capture_output=True).stdout.decode("utf-8")}
+Last 3 git history entries:
+{subprocess.run(["git", "log", "-n3", "--oneline"], capture_output=True).stdout.decode("utf-8")}
+Short git status:
+{subprocess.run(["git", "status", "-s"], capture_output=True).stdout.decode("utf-8")}
+"""
+    else:
+        return ""
+
+
+if __name__ == "__main__":
+    main()
