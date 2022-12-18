@@ -27,9 +27,7 @@ Here are some examples of how you can use terminal-copilot:
 4. `copilot clean up my docker images`
 
 ### Arguments
-Terminal-copilot can be called with optional command line arguments to modify its behavior. These arguments can be specified when calling the copilot command in the terminal.
-
-The available arguments are:
+Terminal-copilot can be called with optional command line arguments:
 
 - `-a`, `--with-aliases`: Enables the inclusion of aliases in the prompt sent to the OpenAI API. May potentially send sensitive information to OpenAI.
 - `-v`, `--verbose`: Increases output verbosity of the tool.
