@@ -74,22 +74,24 @@ The command the user is looking for is:
         print("export OPENAI_API_KEY=<your key>")
         sys.exit(1)
     cmd = request_cmds(prompt, n=1)[0]
+    show_command_options(prompt, cmd)
+
+def show_command_options(prompt, cmd):
     print(f"\033[94m> {cmd}\033[0m")
-    options = ["execute", "more", "copy", "explainshell"]
+    options = ["execute", "copy", "explainshell", "show more options"]
     terminal_menu = TerminalMenu(options)
     menu_entry_index = terminal_menu.show()
     if menu_entry_index == 0:
         os.system(cmd)
     elif menu_entry_index == 1:
-        show_more_cmd_options(prompt)
-    elif menu_entry_index == 2:
         print("> copied")
         pyperclip.copy(cmd)
-    elif menu_entry_index == 3:
+    elif menu_entry_index == 2:
         link = "https://explainshell.com/explain?cmd=" + quote(cmd)
         print("> explainshell: " + link)
         subprocess.run(["open", "https://explainshell.com/explain?cmd=" + quote(cmd)])
-
+    elif menu_entry_index == 3:
+        show_more_cmd_options(prompt)
 
 def show_more_cmd_options(prompt):
     cmds = request_cmds(prompt, n=5)
@@ -98,7 +100,7 @@ def show_more_cmd_options(prompt):
     cmd_terminal_menu = TerminalMenu(options)
     cmd_menu_entry_index = cmd_terminal_menu.show()
     if cmd_menu_entry_index is not None:
-        os.system(cmds[cmd_menu_entry_index])
+        show_command_options(prompt, cmds[cmd_menu_entry_index])
 
 
 def request_cmds(prompt, n=1):
