@@ -74,20 +74,12 @@ The command the user is looking for is:
         print("To set the environment variable, run:")
         print("export OPENAI_API_KEY=<your key>")
         sys.exit(1)
-    response = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=prompt,
-        temperature=0.7,
-        max_tokens=256,
-        top_p=1,
-        stop=["`"],
-        frequency_penalty=0,
-        presence_penalty=0
-    )
-    # strip all whitespace from the response start or end
-    cmd = response.choices[0].text.strip()
+    cmd = request_cmds(prompt, n=1)[0]
+    show_command_options(prompt, cmd)
+
+def show_command_options(prompt, cmd):
     print(f"\033[94m> {cmd}\033[0m")
-    options = ["execute", "copy", "explainshell"]
+    options = ["execute", "copy", "explainshell", "show more options"]
     terminal_menu = TerminalMenu(options)
     menu_entry_index = terminal_menu.show()
     if menu_entry_index == 0:
@@ -99,6 +91,40 @@ The command the user is looking for is:
         link = "https://explainshell.com/explain?cmd=" + quote(cmd)
         print("> explainshell: " + link)
         subprocess.run(["open", "https://explainshell.com/explain?cmd=" + quote(cmd)])
+    elif menu_entry_index == 3:
+        show_more_cmd_options(prompt)
+
+def show_more_cmd_options(prompt):
+    cmds = request_cmds(prompt, n=5)
+    print("Here are more options:")
+    options = [repr(cmd) for cmd in cmds]
+    cmd_terminal_menu = TerminalMenu(options)
+    cmd_menu_entry_index = cmd_terminal_menu.show()
+    if cmd_menu_entry_index is not None:
+        show_command_options(prompt, cmds[cmd_menu_entry_index])
+
+
+def request_cmds(prompt, n=1):
+    response = openai.Completion.create(
+        model="text-davinci-003",
+        prompt=prompt,
+        temperature=0.7,
+        max_tokens=256,
+        top_p=1,
+        stop=["`"],
+        frequency_penalty=0,
+        presence_penalty=0,
+        n=n,
+    )
+    choices = response.choices
+    cmds = strip_all_whitespaces_from(choices)
+    if len(cmds) > 1:
+        cmds = list(dict.fromkeys(cmds))
+    return cmds
+
+
+def strip_all_whitespaces_from(choices):
+    return [choice.text.strip() for choice in choices]
 
 
 if __name__ == "__main__":

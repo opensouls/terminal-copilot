@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 with open('requirements.txt') as f:
     requirements = f.readlines()
-  
+
 long_description = """
 Are you tired of Googling basic terminal commands every time you forget the syntax? Look no further! terminal-copilot is here to help.
 
@@ -31,7 +31,7 @@ Here are some examples of how you can use terminal-copilot:
 
 setup(
         name ='terminal-copilot',
-        version ='1.0.9',
+        version ='1.0.10',
         author ='Methexis',
         author_email ='joelkronander@gmail.com',
         url ='https://github.com/Methexis-Inc/terminal-copilot',
