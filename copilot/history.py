@@ -1,5 +1,6 @@
 import os
-import copilot.history_file as history_file
+
+from copilot import history_file
 
 
 def _is_command(line):
