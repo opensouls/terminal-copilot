@@ -9,14 +9,14 @@ from urllib.parse import quote
 from simple_term_menu import TerminalMenu
 import platform
 
-import history
+import copilot.history as history
 
 
 def main():
     parser = argparse.ArgumentParser(prog='copilot', description='Terminal Copilot')
     parser.add_argument('command', type=str, nargs='+',
                         help='Describe the command you are looking for.')
-    parser.add_argument('-a', '--with-aliases', action='store_true',
+    parser.add_argument('-a', '--alias', action='store_true',
                         help='Include aliases in the prompt. Note: This feature may potentially send sensitive information to OpenAI.')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='increase output verbosity')
@@ -57,10 +57,10 @@ The user has several environment variables set, some of which are:
 {environs}
 {git_info() if args.git else ""}
 """
-    if args.with_aliases:
+    if args.alias:
         prompt += f"""
 The user has the following aliases set:
-{subprocess.run(["alias"], capture_output=True, shell=True).stdout.decode("utf-8")}
+{subprocess.run(["history"], capture_output=True, shell=True).stdout.decode("utf-8")}
 """
     prompt += """
 

@@ -3,7 +3,7 @@ import os
 from unittest.mock import patch
 import unittest
 
-from history import get_history
+from history import copilot.get_history
 
 
 class TestHistory(unittest.TestCase):
