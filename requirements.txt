@@ -14,4 +14,5 @@ tqdm>=4.64.1
 types-pytz>=2022.6.0.1
 typing_extensions>=4.4.0
 urllib3>=1.26.13
-simple_term_menu>=1.5.2
+simple_term_menu>=1.5.2; sys_platform == "linux" or sys_platform == "linux2" or sys_platform == "darwin"
+inquirer; sys_platform == "win32"
