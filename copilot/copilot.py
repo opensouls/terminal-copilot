@@ -9,22 +9,25 @@ from urllib.parse import quote
 from simple_term_menu import TerminalMenu
 import platform
 
+import history
+
 
 def main():
     parser = argparse.ArgumentParser(prog='copilot', description='Terminal Copilot')
     parser.add_argument('command', type=str, nargs='+',
                         help='Describe the command you are looking for.')
     parser.add_argument('-a', '--with-aliases', action='store_true',
-                        help='include aliases in the prompt')
+                        help='Include aliases in the prompt. Note: This feature may potentially send sensitive information to OpenAI.')
     parser.add_argument('-v', '--verbose', action='store_true',
-                        help='increase output verbosity')
+                        help='Increase output verbosity.')
+    parser.add_argument('-hist', '--history', action='store_true',
+                        help='Include terminal history in the prompt. Note: This feature may potentially send sensitive information to OpenAI and increase the number of tokens used.')
 
     args = parser.parse_args()
 
     if args.verbose:
         print("Verbose mode enabled")
 
-    # run history -40 to get the last 40 commands
     # TODO to get more terminal context to work with..
     # TODO save history of previous user questions and answers
 
@@ -47,6 +50,7 @@ The user is currently in the following directory:
 {subprocess.run(["pwd"], capture_output=True).stdout.decode("utf-8")}
 That directory contains the following files:
 {subprocess.run(["ls"], capture_output=True).stdout.decode("utf-8")}
+{history.get_history() if args.history else ""}
 The user has several environment variables set, some of which are:
 {environs}
 """
@@ -76,13 +80,14 @@ The command the user is looking for is:
     cmd = request_cmds(prompt, n=1)[0]
     show_command_options(prompt, cmd)
 
+
 def show_command_options(prompt, cmd):
     print(f"\033[94m> {cmd}\033[0m")
     options = ["execute", "copy", "explainshell", "show more options"]
     terminal_menu = TerminalMenu(options)
     menu_entry_index = terminal_menu.show()
     if menu_entry_index == 0:
-        os.system(cmd)
+        execute(cmd)
     elif menu_entry_index == 1:
         print("> copied")
         pyperclip.copy(cmd)
@@ -92,6 +97,12 @@ def show_command_options(prompt, cmd):
         subprocess.run(["open", "https://explainshell.com/explain?cmd=" + quote(cmd)])
     elif menu_entry_index == 3:
         show_more_cmd_options(prompt)
+
+
+def execute(cmd):
+    os.system(cmd)
+    history.save(cmd)
+
 
 def show_more_cmd_options(prompt):
     cmds = request_cmds(prompt, n=5)
@@ -124,3 +135,7 @@ def request_cmds(prompt, n=1):
 
 def strip_all_whitespaces_from(choices):
     return [choice.text.strip() for choice in choices]
+
+
+if __name__ == "__main__":
+    main()

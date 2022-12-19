@@ -26,8 +26,18 @@ Here are some examples of how you can use terminal-copilot:
 3. `copilot install the openai package for python`
 4. `copilot clean up my docker images`
 
+### Arguments
+Terminal-copilot can be called with optional command line arguments:
+
+- `-a`, `--with-aliases`: Enables the inclusion of aliases in the prompt sent to the OpenAI API. May potentially send sensitive information to OpenAI.
+- `-v`, `--verbose`: Increases output verbosity of the tool.
+- `-hist`, `--history`: Enables the inclusion of terminal history in the prompt sent to the OpenAI API. May potentially send sensitive information to OpenAI and increase the number of tokens used.
+
 ### Requirements
 Python 3.7+ 
+
+### Sensitive Information
+Please note that terminal-copilot has the ability to send sensitive information to OpenAI as part of the prompt used to generate terminal commands. This includes the `--with-aliases` and `--history` command line arguments, which may include sensitive information such as aliases and terminal history. If you are concerned about the potential for sensitive information to be sent to OpenAI, we recommend not using these flags. We recommend that users exercise caution when using these optional features and consider the potential risks before enabling them.
 
 ## Development
 ### Contributing
