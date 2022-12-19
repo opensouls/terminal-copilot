@@ -8,15 +8,7 @@ import os
 from urllib.parse import quote
 import platform
 
-if platform.system().lower().startswith("lin") or platform.system().lower().startswith(
-    "dar"
-):
-    from simple_term_menu import TerminalMenu
-elif platform.system().lower().startswith("win"):
-    import inquirer
-
 from copilot import history
-
 
 if platform.system().lower().startswith("lin") or platform.system().lower().startswith(
     "dar"

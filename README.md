@@ -37,6 +37,7 @@ Terminal-copilot can be called with optional command line arguments:
 
 ### Requirements
 Python 3.7+ 
+Mac Os, Windows, or Linux
 
 ### Sensitive Information
 Please note that terminal-copilot has the ability to send sensitive information to OpenAI as part of the prompt used to generate terminal commands. This includes the `--alias`,`--history`, `--git` command line arguments, which may include sensitive information such as aliases and terminal history. If you are concerned about the potential for sensitive information to be sent to OpenAI, we recommend not using these flags. We recommend that users exercise caution when using these optional features and consider the potential risks before enabling them.
