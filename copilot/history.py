@@ -49,5 +49,8 @@ def get_history(history_context_size=40):
 
 
 def save(cmd):
+    if platform.system().lower().startswith("win"):
+        return
+    
     if os.environ["SHELL"].endswith("fish"):
         history_file.save(cmd)
