@@ -10,6 +10,14 @@ import platform
 
 if platform.system().lower().startswith("lin") or platform.system().lower().startswith("dar"):
     from simple_term_menu import TerminalMenu
+    from copilot import history
+elif platform.system().lower().startswith("win"):
+    import inquirer
+
+
+
+if platform.system().lower().startswith("lin") or platform.system().lower().startswith("dar"):
+    from simple_term_menu import TerminalMenu
 elif platform.system().lower().startswith("win"):
     import inquirer
 
@@ -19,16 +27,19 @@ def main():
     parser.add_argument('command', type=str, nargs='+',
                         help='Describe the command you are looking for.')
     parser.add_argument('-a', '--with-aliases', action='store_true',
-                        help='include aliases in the prompt')
+                        help='Include aliases in the prompt. Note: This feature may potentially send sensitive information to OpenAI.')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='increase output verbosity')
+    parser.add_argument('-g', '--git', action='store_true',
+                        help='Include git info if available')
+    parser.add_argument('-hist', '--history', action='store_true',
+                        help='Include terminal history in the prompt. Note: This feature may potentially send sensitive information to OpenAI and increase the number of tokens used.')
 
     args = parser.parse_args()
 
     if args.verbose:
         print("Verbose mode enabled")
 
-    # run history -40 to get the last 40 commands
     # TODO to get more terminal context to work with..
     # TODO save history of previous user questions and answers
 
@@ -60,8 +71,10 @@ The user is currently in the following directory:
 {current_dir}
 That directory contains the following files:
 {directory_list}
+{history.get_history() if args.history and operating_system.lower().startswith("lin") or operating_system.lower().startswith("dar") else ""}
 The user has several environment variables set, some of which are:
 {environs}
+{git_info() if args.git else ""}
 """
     if args.with_aliases and operating_system.lower().startswith("lin") or operating_system.lower().startswith("dar"):
         prompt += f"""
@@ -86,6 +99,72 @@ The command the user is looking for is:
         print("To set the environment variable, run:")
         print("export OPENAI_API_KEY=<your key>")
         sys.exit(1)
+    cmd = request_cmds(prompt, n=1)[0]
+    show_command_options(prompt, cmd)
+
+
+def show_command_options(prompt, cmd):
+    operating_system = platform.system()
+    
+    print(f"\033[94m> {cmd}\033[0m")
+    options = ["execute", "copy", "explainshell", "show more options"]
+    
+    if operating_system.lower().startswith("lin") or operating_system.lower().startswith("dar"):
+        terminal_menu = TerminalMenu(options)
+        menu_entry_index = terminal_menu.show()
+    elif operating_system.lower().startswith("win"):
+        questions = [
+            inquirer.List('menu_entry_index',
+                        message="What do you want to do?",
+                        choices=options,
+                    ),
+        ]
+        answers = inquirer.prompt(questions)
+        menu_entry_index = answers["menu_entry_index"]
+    
+    if menu_entry_index == 0:
+        execute(cmd)
+    elif menu_entry_index == 1:
+        print("> copied")
+        pyperclip.copy(cmd)
+    elif menu_entry_index == 2:
+        link = "https://explainshell.com/explain?cmd=" + quote(cmd)
+        print("> explainshell: " + link)
+        subprocess.run(["open", "https://explainshell.com/explain?cmd=" + quote(cmd)])
+    elif menu_entry_index == 3:
+        show_more_cmd_options(prompt)
+
+
+def execute(cmd):
+    os.system(cmd)
+    history.save(cmd)
+
+
+def show_more_cmd_options(prompt):
+    operating_system = platform.system()
+    
+    cmds = request_cmds(prompt, n=5)
+    print("Here are more options:")
+    options = [repr(cmd) for cmd in cmds]
+    
+    if operating_system.lower().startswith("lin") or operating_system.lower().startswith("dar"):
+        cmd_terminal_menu = TerminalMenu(options)
+        cmd_menu_entry_index = cmd_terminal_menu.show()
+    elif operating_system.lower().startswith("win"):
+        questions = [
+            inquirer.List('cmd_menu_entry_index',
+                        message="Which command do you want to execute?",
+                        choices=options,
+                    ),
+        ]
+        answers = inquirer.prompt(questions)
+        cmd_menu_entry_index = answers["cmd_menu_entry_index"]    
+    
+    if cmd_menu_entry_index is not None:
+        show_command_options(prompt, cmds[cmd_menu_entry_index])
+
+
+def request_cmds(prompt, n=1):
     response = openai.Completion.create(
         model="text-davinci-003",
         prompt=prompt,
@@ -94,32 +173,31 @@ The command the user is looking for is:
         top_p=1,
         stop=["`"],
         frequency_penalty=0,
-        presence_penalty=0
+        presence_penalty=0,
+        n=n,
     )
-    # strip all whitespace from the response start or end
-    cmd = response.choices[0].text.strip()
-    print(f"\033[94m> {cmd}\033[0m")
-    
-    options = ["execute", "copy", "explainshell"]
-    if operating_system.lower().startswith("lin") or operating_system.lower().startswith("dar"):
-        terminal_menu = TerminalMenu(options)
-        menu_entry_index = terminal_menu.show()
-    elif operating_system.lower().startswith("win"):
-        questions = [
-            inquirer.List('action',
-                message="Choose",
-                choices=options,
-            ),
-        ]
-        answer = inquirer.prompt(questions)
-        menu_entry_index = options.index(answer["action"])
-    
-    if menu_entry_index == 0:
-        os.system(cmd)
-    elif menu_entry_index == 1:
-        print("> copied")
-        pyperclip.copy(cmd)
-    elif menu_entry_index == 2:
-        link = "https://explainshell.com/explain?cmd=" + quote(cmd)
-        print("> explainshell: " + link)
-        subprocess.run(["open", "https://explainshell.com/explain?cmd=" + quote(cmd)])
+    choices = response.choices
+    cmds = strip_all_whitespaces_from(choices)
+    if len(cmds) > 1:
+        cmds = list(dict.fromkeys(cmds))
+    return cmds
+
+
+def strip_all_whitespaces_from(choices):
+    return [choice.text.strip() for choice in choices]
+
+
+def git_info():
+    git_installed = subprocess.run(["which", "git"], capture_output=True).returncode == 0
+    if os.path.exists(".git") and git_installed:
+        return f"""
+User is in a git repo.
+Branches are:
+{subprocess.run(["git", "branch"], capture_output=True).stdout.decode("utf-8")}
+Last 3 git history entries:
+{subprocess.run(["git", "log", "-n3", "--oneline"], capture_output=True).stdout.decode("utf-8")}
+Short git status:
+{subprocess.run(["git", "status", "-s"], capture_output=True).stdout.decode("utf-8")}
+"""
+    else:
+        return ""
