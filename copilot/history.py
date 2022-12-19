@@ -1,4 +1,5 @@
 import os
+import platform
 
 from copilot import history_file
 
