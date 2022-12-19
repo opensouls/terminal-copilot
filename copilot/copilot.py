@@ -19,7 +19,9 @@ def main():
     parser.add_argument('-a', '--with-aliases', action='store_true',
                         help='Include aliases in the prompt. Note: This feature may potentially send sensitive information to OpenAI.')
     parser.add_argument('-v', '--verbose', action='store_true',
-                        help='Increase output verbosity.')
+                        help='increase output verbosity')
+    parser.add_argument('-g', '--git', action='store_true',
+                        help='Include git info if available')
     parser.add_argument('-hist', '--history', action='store_true',
                         help='Include terminal history in the prompt. Note: This feature may potentially send sensitive information to OpenAI and increase the number of tokens used.')
 
@@ -53,6 +55,7 @@ That directory contains the following files:
 {history.get_history() if args.history else ""}
 The user has several environment variables set, some of which are:
 {environs}
+{git_info() if args.git else ""}
 """
     if args.with_aliases:
         prompt += f"""
@@ -137,5 +140,17 @@ def strip_all_whitespaces_from(choices):
     return [choice.text.strip() for choice in choices]
 
 
-if __name__ == "__main__":
-    main()
+def git_info():
+    git_installed = subprocess.run(["which", "git"], capture_output=True).returncode == 0
+    if os.path.exists(".git") and git_installed:
+        return f"""
+User is in a git repo.
+Branches are:
+{subprocess.run(["git", "branch"], capture_output=True).stdout.decode("utf-8")}
+Last 3 git history entries:
+{subprocess.run(["git", "log", "-n3", "--oneline"], capture_output=True).stdout.decode("utf-8")}
+Short git status:
+{subprocess.run(["git", "status", "-s"], capture_output=True).stdout.decode("utf-8")}
+"""
+    else:
+        return ""
