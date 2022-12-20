@@ -37,8 +37,8 @@ def zsh_history_file_lines():
     history_file = _zsh_history_file_location()
     if history_file is None:
         return []
-    with open(history_file, 'r') as history:
-        lines = history.read().splitlines()
+    with open(history_file, 'rb') as history:
+        lines = history.read().decode(errors='replace').splitlines()
         return lines
 
 
