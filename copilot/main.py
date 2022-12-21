@@ -123,7 +123,7 @@ def show_command_options(prompt, cmd):
     options = ["execute", "copy", "explainshell", "show more options"]
 
     if operating_system.lower().startswith(
-            "lin"
+        "lin"
     ) or operating_system.lower().startswith("dar"):
         terminal_menu = TerminalMenu(options)
         menu_entry_index = terminal_menu.show()
