@@ -11,7 +11,7 @@ class TestHistory(unittest.TestCase):
         # arrange
         os.environ["SHELL"] = "/usr/bin/fish"
         # act
-        with patch('history_file.fish_history_file_lines') as mock_fish_history_file_lines:
+        with patch('copilot.history_file.fish_history_file_lines') as mock_fish_history_file_lines:
             mock_fish_history_file_lines.return_value = [
                 "- cmd: ls\n",
                 "- cmd: cd /home/username\n",
@@ -24,7 +24,7 @@ class TestHistory(unittest.TestCase):
         # arrange
         os.environ["SHELL"] = "/usr/bin/fish"
         # act
-        with patch('history_file.fish_history_file_lines') as mock_fish_history_file_lines:
+        with patch('copilot.history_file.fish_history_file_lines') as mock_fish_history_file_lines:
             mock_fish_history_file_lines.return_value = [
                 "- cmd: ls\n",
                 "  when: 1664698037\n",
@@ -41,7 +41,7 @@ class TestHistory(unittest.TestCase):
         # arrange
         os.environ["SHELL"] = "/usr/bin/fish"
         # act
-        with patch('history_file.fish_history_file_lines') as mock_fish_history_file_lines:
+        with patch('copilot.history_file.fish_history_file_lines') as mock_fish_history_file_lines:
             mock_fish_history_file_lines.return_value = []
             history = get_history()
         # assert
@@ -51,7 +51,7 @@ class TestHistory(unittest.TestCase):
         # arrange
         os.environ["SHELL"] = "/other/fish"
         # act
-        with patch('history_file.fish_history_file_lines') as mock_fish_history_file_lines:
+        with patch('copilot.history_file.fish_history_file_lines') as mock_fish_history_file_lines:
             mock_fish_history_file_lines.return_value = [
                 "- cmd: ls\n",
             ]
@@ -63,7 +63,7 @@ class TestHistory(unittest.TestCase):
         # arrange
         os.environ["SHELL"] = ""
         # act
-        with patch('history_file.fish_history_file_lines') as mock_fish_history_file_lines:
+        with patch('copilot.history_file.fish_history_file_lines') as mock_fish_history_file_lines:
             mock_fish_history_file_lines.return_value = [
                 "- cmd: ls\n",
                 "- cmd: cd /home/username\n",
@@ -76,7 +76,7 @@ class TestHistory(unittest.TestCase):
         # arrange
         os.environ["SHELL"] = "/usr/bin/fish"
         # act
-        with patch('history_file.fish_history_file_lines') as mock_fish_history_file_lines:
+        with patch('copilot.history_file.fish_history_file_lines') as mock_fish_history_file_lines:
             mock_fish_history_file_lines.return_value = [
                 "- cmd: ls\n",
             ]
@@ -89,7 +89,7 @@ class TestHistory(unittest.TestCase):
         # arrange
         os.environ["SHELL"] = "/usr/bin/fish"
         # act
-        with patch('history_file.fish_history_file_lines') as mock_fish_history_file_lines:
+        with patch('copilot.history_file.fish_history_file_lines') as mock_fish_history_file_lines:
             mock_fish_history_file_lines.return_value = [
                 "- cmd: ls\n",
                 "  when: 1611234567\n",
@@ -104,9 +104,9 @@ class TestHistory(unittest.TestCase):
         # arrange
         os.environ["SHELL"] = "/usr/bin/fish"
         short_command = "ls -l /short/command"
-        long_command = "ls -l /home/username/very/long/path/that/should/be/truncated/and/this/should/be/truncated/too/this/sh" # 101 characters
+        long_command = "ls -l /home/username/very/long/path/that/should/be/truncated/and/this/should/be/truncated/too/this/sh"  # 101 characters
         # act
-        with patch('history_file.fish_history_file_lines') as mock_fish_history_file_lines:
+        with patch('copilot.history_file.fish_history_file_lines') as mock_fish_history_file_lines:
             mock_fish_history_file_lines.return_value = [
                 f"- cmd: {long_command}",
                 f"- cmd: {short_command}",

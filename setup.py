@@ -21,7 +21,7 @@ setup(
         packages = find_packages(),
         entry_points ={
             'console_scripts': [
-                'copilot=copilot.copilot:main'
+                'copilot=copilot.main:main'
             ]
         },
         classifiers =(
