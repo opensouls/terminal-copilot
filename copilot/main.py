@@ -92,7 +92,7 @@ The user has several environment variables set, some of which are:
     ):
         prompt += f"""
 The user has the following aliases set:
-{subprocess.run(["history"], capture_output=True, shell=True).stdout.decode("utf-8")}
+{subprocess.run(["alias"], capture_output=True, shell=True).stdout.decode("utf-8")}
 """
     prompt += """
 
