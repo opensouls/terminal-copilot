@@ -2,6 +2,8 @@ import os
 from time import time
 import platform
 
+from copilot import shell_adapter
+
 
 def _fish_history_file_location():
     possible_paths = [
@@ -76,15 +78,15 @@ def _get_bash_history_line(command_script):
 def save(cmd):
     if platform.system().lower().startswith("win"):
         return
-    if os.environ["SHELL"].endswith("fish"):
+    if shell_adapter.is_fish():
         formatted_line = _get_fish_history_line(cmd)
         history_file = _fish_history_file_location()
         _append_line(formatted_line, history_file)
-    elif os.environ["SHELL"].endswith("zsh"):
+    elif shell_adapter.is_zsh():
         formatted_line = cmd
         history_file = _zsh_history_file_location()
         _append_line(formatted_line, history_file)
-    elif os.environ["SHELL"].endswith("bash"):
+    elif shell_adapter.is_bash():
         formatted_line = cmd
         history_file = _bash_history_file_location()
         _append_line(formatted_line, history_file)

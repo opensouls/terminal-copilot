@@ -1,6 +1,4 @@
-import os
-
-from copilot import history_file
+from copilot import history_file, shell_adapter
 
 
 def _is_command(line):
@@ -42,11 +40,11 @@ The user has recently run these last {min(len(commands), n)} commands:
 
 
 def get_history(n=40):
-    if os.environ["SHELL"].endswith("fish"):
+    if shell_adapter.is_fish():
         return history_prompt_for(_fish_commands(), n)
-    if os.environ["SHELL"].endswith("zsh"):
+    if shell_adapter.is_zsh():
         return history_prompt_for(_zsh_commands(), n)
-    if os.environ["SHELL"].endswith("bash"):
+    if shell_adapter.is_bash():
         return history_prompt_for(_bash_commands(), n)
     else:
         return ""
