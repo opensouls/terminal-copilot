@@ -7,7 +7,7 @@ from copilot.history import get_history
 
 
 class TestHistory(unittest.TestCase):
-    def test_get_history_add_user_history_context(self):
+    def test_get_history_add_fish_user_history_context(self):
         # arrange
         os.environ["SHELL"] = "/usr/bin/fish"
         # act
@@ -15,6 +15,19 @@ class TestHistory(unittest.TestCase):
             mock_fish_history_file_lines.return_value = [
                 "- cmd: ls\n",
                 "- cmd: cd /home/username\n",
+            ]
+            history = get_history()
+        # assert
+        self.assertTrue("The user has recently run these last 2 commands:" in history)
+
+    def test_get_history_adds_zsh_user_history_context(self):
+        # arrange
+        os.environ["SHELL"] = "/usr/bin/zsh"
+        # act
+        with patch('copilot.history_file.zsh_history_file_lines') as mock_zsh_history_file_lines:
+            mock_zsh_history_file_lines.return_value = [
+                ": 1611234567:0;ls",
+                ": 1611234568:0;cd /home/username",
             ]
             history = get_history()
         # assert
@@ -115,3 +128,88 @@ class TestHistory(unittest.TestCase):
         # assert
         self.assertTrue(short_command in history)
         self.assertFalse(long_command in history)
+
+    def test_get_history_returns_empty_string_fish_history_file_is_empty(self):
+        # arrange
+        os.environ["SHELL"] = "/usr/bin/fish"
+        # act
+        with patch('copilot.history_file.fish_history_file_lines') as mock_fish_history_file_lines:
+            mock_fish_history_file_lines.return_value = []
+            history = get_history()
+        # assert
+        self.assertEqual(history, "")
+
+    def test_get_history_returns_empty_string_if_zsh_history_file_is_empty(self):
+        # arrange
+        os.environ["SHELL"] = "/usr/bin/zsh"
+        # act
+        with patch('copilot.history_file.zsh_history_file_lines') as mock_zsh_history_file_lines:
+            mock_zsh_history_file_lines.return_value = []
+            history = get_history()
+        # assert
+        self.assertEqual(history, "")
+
+    def test_get_history_does_not_include_duplicate_fish_commands(self):
+        # arrange
+        os.environ["SHELL"] = "/usr/bin/fish"
+        # act
+        with patch('copilot.history_file.fish_history_file_lines') as mock_fish_history_file_lines:
+            mock_fish_history_file_lines.return_value = [
+                "- cmd: ls\n",
+                "- cmd: ls\n",
+            ]
+            history = get_history()
+        # assert
+        self.assertEqual(history.count("ls"), 1)
+
+    def test_get_history_does_not_include_duplicate_zsh_commands(self):
+        # arrange
+        os.environ["SHELL"] = "/usr/bin/zsh"
+        # act
+        with patch('copilot.history_file.zsh_history_file_lines') as mock_zsh_history_file_lines:
+            mock_zsh_history_file_lines.return_value = [
+                ": 1611234567:0;ls",
+                ": 1611234567:0;ls",
+            ]
+            history = get_history()
+        # assert
+        self.assertEqual(history.count("ls"), 1)
+
+    # bash
+
+    def test_get_history_returns_empty_string_if_bash_history_file_is_empty(self):
+        # arrange
+        os.environ["SHELL"] = "/usr/bin/bash"
+        # act
+        with patch('copilot.history_file.bash_history_file_lines') as mock_bash_history_file_lines:
+            mock_bash_history_file_lines.return_value = []
+            history = get_history()
+        # assert
+        self.assertEqual(history, "")
+
+    def test_get_history_does_not_include_duplicate_bash_commands(self):
+        # arrange
+        os.environ["SHELL"] = "/usr/bin/bash"
+        # act
+        with patch('copilot.history_file.bash_history_file_lines') as mock_bash_history_file_lines:
+            mock_bash_history_file_lines.return_value = [
+                "ls",
+                "ls",
+            ]
+            history = get_history()
+        # assert
+        self.assertEqual(history.count("ls"), 1)
+
+    def test_get_history_processed_bash_history_file(self):
+        # arrange
+        os.environ["SHELL"] = "/usr/bin/bash"
+        # act
+        with patch('copilot.history_file.bash_history_file_lines') as mock_bash_history_file_lines:
+            mock_bash_history_file_lines.return_value = [
+                "ls",
+                "cd /home/username",
+            ]
+            history = get_history()
+        # assert
+        self.assertTrue("ls" in history)
+        self.assertTrue("cd /home/username" in history)
