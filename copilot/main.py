@@ -10,9 +10,12 @@ import platform
 
 from copilot import history
 
-if platform.system().lower().startswith("lin") or platform.system().lower().startswith(
-    "dar"
-):
+
+def is_unix_system():
+    return platform.system().lower().startswith("lin") or platform.system().lower().startswith("dar")
+
+
+if is_unix_system():
     from simple_term_menu import TerminalMenu
 elif platform.system().lower().startswith("win"):
     import inquirer
@@ -57,9 +60,7 @@ def main():
             environs += f"{key}={os.environ[key]}\n"
 
     operating_system = platform.system()
-    if operating_system.lower().startswith(
-        "lin"
-    ) or operating_system.lower().startswith("dar"):
+    if is_unix_system():
         shell = os.environ.get("SHELL")
     elif operating_system.lower().startswith("win"):
         shell = "cmd"
@@ -80,15 +81,14 @@ The user is currently in the following directory:
 {current_dir}
 That directory contains the following files:
 {directory_list}
-{history.get_history() if args.history and operating_system.lower().startswith("lin") or operating_system.lower().startswith("dar") else ""}
+{history.get_history() if args.history and is_unix_system() else ""}
 The user has several environment variables set, some of which are:
 {environs}
 {git_info() if args.git else ""}
 """
     if (
-        args.alias
-        and operating_system.lower().startswith("lin")
-        or operating_system.lower().startswith("dar")
+            args.alias
+            and is_unix_system()
     ):
         prompt += f"""
 The user has the following aliases set:
@@ -122,9 +122,7 @@ def show_command_options(prompt, cmd):
     print(f"\033[94m> {cmd}\033[0m")
     options = ["execute", "copy", "explainshell", "show more options"]
 
-    if operating_system.lower().startswith(
-        "lin"
-    ) or operating_system.lower().startswith("dar"):
+    if is_unix_system():
         terminal_menu = TerminalMenu(options)
         menu_entry_index = terminal_menu.show()
     elif operating_system.lower().startswith("win"):
@@ -163,9 +161,7 @@ def show_more_cmd_options(prompt):
     print("Here are more options:")
     options = [repr(cmd) for cmd in cmds]
 
-    if operating_system.lower().startswith(
-        "lin"
-    ) or operating_system.lower().startswith("dar"):
+    if is_unix_system():
         cmd_terminal_menu = TerminalMenu(options)
         cmd_menu_entry_index = cmd_terminal_menu.show()
     elif operating_system.lower().startswith("win"):
@@ -208,7 +204,7 @@ def strip_all_whitespaces_from(choices):
 
 def git_info():
     git_installed = (
-        subprocess.run(["which", "git"], capture_output=True).returncode == 0
+            subprocess.run(["which", "git"], capture_output=True).returncode == 0
     )
     if os.path.exists(".git") and git_installed:
         return f"""
