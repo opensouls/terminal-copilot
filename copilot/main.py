@@ -7,6 +7,7 @@ import pyperclip
 import os
 from urllib.parse import quote
 import platform
+import json
 
 from copilot import history
 
@@ -43,6 +44,12 @@ def main():
         "--history",
         action="store_true",
         help="Include terminal history in the prompt. Note: This feature may potentially send sensitive information to OpenAI and increase the number of tokens used.",
+    )
+    parser.add_argument(
+        "-j", "--json", action="store_true", help="Output data as JSON instead of using an interactive prompt."
+    )
+    parser.add_argument(
+        "-c", "--count", help="The number of commands to output when JSON output is specified."
     )
 
     args = parser.parse_args()
@@ -112,8 +119,15 @@ The command the user is looking for is:
         print("To set the environment variable, run:")
         print("export OPENAI_API_KEY=<your key>")
         sys.exit(1)
-    cmd = request_cmds(prompt, n=1)[0]
-    show_command_options(prompt, cmd)
+    cmds = request_cmds(prompt, n=int(args.count) if args.json and args.count else 1)
+
+    if args.json:
+        print(json.dumps({
+            "commands": cmds,
+            "explainshell_links": list(map(get_explainshell_link, cmds))
+        }))
+    else:
+        show_command_options(prompt, cmds[0])
 
 
 def show_command_options(prompt, cmd):
@@ -142,9 +156,9 @@ def show_command_options(prompt, cmd):
         print("> copied")
         pyperclip.copy(cmd)
     elif menu_entry_index == 2:
-        link = "https://explainshell.com/explain?cmd=" + quote(cmd)
+        link = get_explainshell_link(cmd)
         print("> explainshell: " + link)
-        subprocess.run(["open", "https://explainshell.com/explain?cmd=" + quote(cmd)])
+        subprocess.run(["open", link])
     elif menu_entry_index == 3:
         show_more_cmd_options(prompt)
 
@@ -197,6 +211,8 @@ def request_cmds(prompt, n=1):
         cmds = list(dict.fromkeys(cmds))
     return cmds
 
+def get_explainshell_link(cmd):
+    return "https://explainshell.com/explain?cmd=" + quote(cmd)
 
 def strip_all_whitespaces_from(choices):
     return [choice.text.strip() for choice in choices]
