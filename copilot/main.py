@@ -8,6 +8,7 @@ import os
 from urllib.parse import quote
 import platform
 import json
+import re
 
 from copilot import history
 from messages_builder import Context, build_messages
@@ -152,7 +153,6 @@ def show_command_options(messages, cmd):
 def create_terminal_menu(options):
     return TerminalMenu(options)
 
-
 def read_input():
     return input("> ")
 
@@ -235,10 +235,9 @@ def request_cmds(messages, n=1):
         cmds = list(dict.fromkeys(cmds))
     return cmds
 
+
 def get_explainshell_link(cmd):
     return "https://explainshell.com/explain?cmd=" + quote(cmd)
-
-import re
 
 
 def strip(choices):

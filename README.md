@@ -1,7 +1,7 @@
 [![PyPI version](https://badge.fury.io/py/terminal-copilot.svg)](https://badge.fury.io/py/terminal-copilot)
 
 # Terminal-copilot
-Are you tired of Googling basic terminal commands every time you forget the syntax?  
+Are you tired of Googling basic terminal commands every time you forget the syntax?
 Look no further! terminal-copilot is here to help.
 
 With terminal-copilot, you can quickly and easily access commonly used terminal commands right from the command line. Simply type copilot followed by your desired command in natural language and let terminal-copilot do the rest.
@@ -34,9 +34,11 @@ Terminal-copilot can be called with optional command line arguments:
 - `-v`, `--verbose`: Increases output verbosity of the tool.
 - `-g`, `--git`: This flag enables the inclusion of Git context in the prompt sent to the OpenAI API. This can be useful for users working with Git repositories and may include the current branch name, repository status, recent commit messages, and file history.
 - `-hist`, `--history`: Enables the inclusion of terminal history in the prompt sent to the OpenAI API. May potentially send sensitive information to OpenAI and increase the number of tokens used.
+- `-j`, `--json`: Output data as JSON instead of using an interactive prompt.
+- `-c`, `--count`: The number of commands to output when JSON output is specified.
 
 ### Requirements
-Python 3.7+ 
+Python 3.7+
 Mac Os, Windows, or Linux
 
 ### Sensitive Information
@@ -56,4 +58,3 @@ Thank you for considering contributing to terminal-copilot! Together, we can mak
 ### Packaging for PyPi
 1. `python setup.py sdist bdist_wheel`
 2. `twine upload dist/*`
-
