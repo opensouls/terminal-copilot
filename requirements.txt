@@ -2,7 +2,7 @@ certifi>=2022.12.7
 et-xmlfile>=1.1.0
 idna>=3.4
 numpy>=1.21.6
-openai>=0.25.0
+openai>=0.27.0
 openpyxl>=3.0.10
 pandas>=1.3.5
 python-dateutil>=2.8.2
@@ -14,5 +14,5 @@ tqdm>=4.64.1
 types-pytz>=2022.6.0.1
 typing_extensions>=4.4.0
 urllib3>=1.26.13
-simple_term_menu>=1.5.2; sys_platform == "linux" or sys_platform == "linux2" or sys_platform == "darwin"
+simple_term_menu>=1.6.1; sys_platform == "linux" or sys_platform == "linux2" or sys_platform == "darwin"
 inquirer; sys_platform == "win32"

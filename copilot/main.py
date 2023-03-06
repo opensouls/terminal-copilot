@@ -7,8 +7,10 @@ import pyperclip
 import os
 from urllib.parse import quote
 import platform
+import json
 
 from copilot import history
+from messages_builder import Context, build_messages
 
 
 def is_unix_system():
@@ -44,6 +46,12 @@ def main():
         action="store_true",
         help="Include terminal history in the prompt. Note: This feature may potentially send sensitive information to OpenAI and increase the number of tokens used.",
     )
+    parser.add_argument(
+        "-j", "--json", action="store_true", help="Output data as JSON instead of using an interactive prompt."
+    )
+    parser.add_argument(
+        "-c", "--count", help="The number of commands to output when JSON output is specified."
+    )
 
     args = parser.parse_args()
 
@@ -71,38 +79,21 @@ def main():
     # list the files in the current directory
     directory_list = os.listdir()
 
-    prompt = f"""
-You are an AI Terminal Copilot. Your job is to help users find the right terminal command in a {shell} on {operating_system}.
+    context = Context(
+        shell=shell,
+        operating_system=operating_system,
+        directory=current_dir,
+        directory_list=directory_list,
+        history=history.get_history() if args.history and is_unix_system() else "",
+        command=" ".join(args.command),
+        git=git_info() if args.git else "",
+    )
 
-The user is asking for the following command:
-'{" ".join(args.command)}'
-
-The user is currently in the following directory:
-{current_dir}
-That directory contains the following files:
-{directory_list}
-{history.get_history() if args.history and is_unix_system() else ""}
-The user has several environment variables set, some of which are:
-{environs}
-{git_info() if args.git else ""}
-"""
-    if (
-            args.alias
-            and is_unix_system()
-    ):
-        prompt += f"""
-The user has the following aliases set:
-{subprocess.run(["alias"], capture_output=True, shell=True).stdout.decode("utf-8")}
-"""
-    prompt += """
-
-The command the user is looking for is:
-`
-"""
+    messages = build_messages(context)
 
     if args.verbose:
-        print("Sent this prompt to OpenAI:")
-        print(prompt)
+        print("Sent this messages to OpenAI:")
+        print(messages)
 
     # Call openai api to get the command completion
     openai.api_key = os.environ.get("OPENAI_API_KEY")
@@ -112,18 +103,25 @@ The command the user is looking for is:
         print("To set the environment variable, run:")
         print("export OPENAI_API_KEY=<your key>")
         sys.exit(1)
-    cmd = request_cmds(prompt, n=1)[0]
-    show_command_options(prompt, cmd)
+    cmds = request_cmds(messages, n=int(args.count) if args.json and args.count else 1)
+
+    if args.json:
+        print(json.dumps({
+            "commands": cmds,
+            "explainshell_links": list(map(get_explainshell_link, cmds))
+        }))
+    else:
+        show_command_options(messages, cmds[0])
 
 
-def show_command_options(prompt, cmd):
+def show_command_options(messages, cmd):
     operating_system = platform.system()
 
     print(f"\033[94m> {cmd}\033[0m")
-    options = ["execute", "copy", "explainshell", "show more options"]
+    options = ["execute", "refine", "copy", "explainshell", "show more options"]
 
     if is_unix_system():
-        terminal_menu = TerminalMenu(options)
+        terminal_menu = create_terminal_menu(options)
         menu_entry_index = terminal_menu.show()
     elif operating_system.lower().startswith("win"):
         questions = [
@@ -137,32 +135,72 @@ def show_command_options(prompt, cmd):
         menu_entry_index = options.index(answers["menu_entry_index"])
 
     if menu_entry_index == 0:
-        execute(cmd)
+        execute(messages, cmd)
     elif menu_entry_index == 1:
+        refine_command(messages, cmd)
+    elif menu_entry_index == 2:
         print("> copied")
         pyperclip.copy(cmd)
-    elif menu_entry_index == 2:
-        link = "https://explainshell.com/explain?cmd=" + quote(cmd)
-        print("> explainshell: " + link)
-        subprocess.run(["open", "https://explainshell.com/explain?cmd=" + quote(cmd)])
     elif menu_entry_index == 3:
-        show_more_cmd_options(prompt)
+        link = get_explainshell_link(cmd)
+        print("> explainshell: " + link)
+        subprocess.run(["open", link])
+    elif menu_entry_index == 4:
+        show_more_cmd_options(messages)
 
 
-def execute(cmd):
-    os.system(cmd)
-    history.save(cmd)
+def create_terminal_menu(options):
+    return TerminalMenu(options)
 
 
-def show_more_cmd_options(prompt):
+def read_input():
+    return input("> ")
+
+
+def refine_command(messages, cmd):
+    refinement = read_input()
+    messages.append({"role": "assistant", "content": cmd})
+    refinement_command = f"""The user requires a command for the following prompt: `{refinement}`.
+ONLY OUTPUT THE COMMAND. No description, no explanation, no nothing.
+Do not add any text in front of it and do not add any text after it.
+The command the user is looking for is: `"""
+    messages.append({"role": "user", "content": refinement_command})
+    cmd = request_cmds(messages, n=1)[0]
+    show_command_options(messages, cmd)
+
+def execute(messages, cmd):
+    try:
+        result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
+        out = result.stdout
+        error = result.stderr
+        print(out)
+        print(error)
+        if error != "" and error is not None:
+            refine_failed_command(messages, cmd, error)
+    except Exception as e:
+        print(e)
+        refine_failed_command(messages, cmd, str(e))
+
+
+def refine_failed_command(messages, cmd, error):
+    messages.append({"role": "assistant", "content": cmd})
+    failed_command = f"The last suggested command of the assistant failed with the error: `{error}`." \
+                     f"The corrected command (and only the command) is:`"
+    messages.append({"role": "user", "content": failed_command})
+    cmd = request_cmds(messages, n=1)[0]
+    print("The last command failed. Here is suggested corrected command:")
+    show_command_options(messages, cmd)
+
+
+def show_more_cmd_options(messages):
     operating_system = platform.system()
 
-    cmds = request_cmds(prompt, n=5)
+    cmds = request_cmds(messages, n=5)
     print("Here are more options:")
     options = [repr(cmd) for cmd in cmds]
 
     if is_unix_system():
-        cmd_terminal_menu = TerminalMenu(options)
+        cmd_terminal_menu = create_terminal_menu(options)
         cmd_menu_entry_index = cmd_terminal_menu.show()
     elif operating_system.lower().startswith("win"):
         questions = [
@@ -176,30 +214,35 @@ def show_more_cmd_options(prompt):
         cmd_menu_entry_index = options.index(answers["cmd_menu_entry_index"])
 
     if cmd_menu_entry_index is not None:
-        show_command_options(prompt, cmds[cmd_menu_entry_index])
+        show_command_options(messages, cmds[cmd_menu_entry_index])
 
 
-def request_cmds(prompt, n=1):
-    response = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=prompt,
-        temperature=0.7,
-        max_tokens=256,
-        top_p=1,
+def request_cmds(messages, n=1):
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+        temperature=0,
+        max_tokens=1000,
+        top_p=0.2,
         stop=["`"],
         frequency_penalty=0,
         presence_penalty=0,
         n=n,
     )
     choices = response.choices
-    cmds = strip_all_whitespaces_from(choices)
+    cmds = strip(choices)
     if len(cmds) > 1:
         cmds = list(dict.fromkeys(cmds))
     return cmds
 
+def get_explainshell_link(cmd):
+    return "https://explainshell.com/explain?cmd=" + quote(cmd)
 
-def strip_all_whitespaces_from(choices):
-    return [choice.text.strip() for choice in choices]
+import re
+
+
+def strip(choices):
+    return [re.sub('`[^`]*(`|$)', r'\1', choice.message.content) for choice in choices]
 
 
 def git_info():
