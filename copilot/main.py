@@ -1,4 +1,5 @@
 # Program to serve as a terminal copilot for the user
+import enum
 import sys
 import argparse
 import subprocess
@@ -12,6 +13,7 @@ import re
 
 from copilot import history
 from conversation import Conversation
+from copilot.parse_os import parse_operating_system, OperatingSystem
 from parse_args import parse_terminal_copilot_args
 from messages_builder import Context, build_conversation
 
@@ -41,16 +43,13 @@ def main():
         if key in os.environ:
             environs += f"{key}={os.environ[key]}\n"
 
-    operating_system = platform.system()
-    if is_unix_system():
+    operating_system = parse_operating_system(platform.system())
+    if operating_system.is_unix():
         shell = os.environ.get("SHELL")
-    elif operating_system.lower().startswith("win"):
+    elif operating_system == OperatingSystem.WINDOWS:
         shell = "cmd"
 
-    # get the current directory
     current_dir = os.getcwd()
-
-    # list the files in the current directory
     directory_list = os.listdir()
 
     context = Context(
