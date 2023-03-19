@@ -36,5 +36,10 @@ def parse_terminal_copilot_args():
         "-m", "--model", type=argparse_model_type, default=Model.GPT_35_TURBO,
         help="The model to use. Defaults to gpt-3.5-turbo."
     )
+    parser.add_argument(
+        "-ns", "--no-stream", action="store_true",
+        default=False,
+        help="Disable streaming the command into the terminal (by default, streaming is enabled)."
+    )
     args = parser.parse_args()
     return args
