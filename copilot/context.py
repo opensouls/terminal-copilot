@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from conversation import Model
-from copilot.parse_os import OperatingSystem
+from parse_os import OperatingSystem
 
 
 @dataclass

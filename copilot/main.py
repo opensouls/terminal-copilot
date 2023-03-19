@@ -13,7 +13,7 @@ import re
 
 from copilot import history
 from conversation import Conversation
-from copilot.parse_os import parse_operating_system, OperatingSystem
+from parse_os import parse_operating_system, OperatingSystem
 from parse_args import parse_terminal_copilot_args
 from messages_builder import Context, build_conversation
 
