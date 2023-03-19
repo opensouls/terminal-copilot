@@ -1,24 +1,8 @@
-from dataclasses import dataclass
+from context import Context
+from conversation import Conversation
 
 
-@dataclass
-class Context:
-    shell: str
-    operating_system: str
-    directory: str
-    directory_list: list[str]
-    history: str
-    command: str
-    git: str
-
-
-def system_message():
-    return f"""
-You are an AI Terminal Copilot assistant called Sky
-"""
-
-
-def user_message(context: Context):
+def system_message(context: Context):
     return f"""
 The user is currently in the directory {context.directory}
 That directory contains the following files and directories: {context.directory_list}
@@ -54,13 +38,20 @@ The user requires a command for the following prompt: `update Copyright [yyyy] [
 Sky: sed -i '' 's/[yyyy] [name of copyright owner]/2023 Copilot/g' FILENAME`
 The last suggested command of the assistant failed with the error: `sed: FILENAME: No such file or directory`
 Sky: sed -i '' 's/[yyyy] [name of copyright owner]/2023 Copilot/g' LICENSE`
-###
+"""
+
+
+def user_message(context: Context):
+    return f"""
 The user requires a command for the following prompt: `{context.command}`
 The command the user is looking for is:`"""
 
 
-def build_messages(context: Context):
-    return [
-        {"role": "system", "content": system_message()},
-        {"role": "user", "content": user_message(context)},
-    ]
+def build_conversation(context: Context) -> Conversation:
+    return Conversation(
+        messages=[
+            {"role": "system", "content": system_message(context)},
+            {"role": "user", "content": user_message(context)},
+        ],
+        model=context.model
+    )
