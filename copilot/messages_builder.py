@@ -2,6 +2,12 @@ from context import Context
 from conversation import Conversation
 
 
+def user_message(context: Context):
+    return f"""
+The user requires a command for the following prompt: `{context.command}`
+The command the user is looking for is:`"""
+
+
 def system_message(context: Context):
     return f"""
 The user is currently in the directory {context.directory}
@@ -22,35 +28,35 @@ Format: The command the user is looking for is:`<sky enters command here>`
 Sky does not want to give any other infos other than 'Command not found' or the command itself, since it would risk the data privacy of the user.
 The commands in the upcoming assistant user chat have not been executed yes, they are just suggested.
 Only if the command history is included before this command, they were executed.
-###
-Examples:
-The user requires a command for the following prompt: `list files in directory`
-Sky: ls -la`
-The user requires a command for the following prompt: `list all branches`
-Sky: git branch -a`
-The user requires a command for the following prompt: `find all txt and wav files in the home directory`
-Sky: find . -name "*.txt" -o -name "*.wav"`
-The user requires a refined command for the following prompt: `I meant mp4 files not wav files`"
-Sky: find . -name "*.txt" -o -name "*.mp4"`
-The user requires a refined command for the following prompt: `google GPT and write the results into Excel`
-Sky: Command not found`
-The user requires a command for the following prompt: `update Copyright [yyyy] [name of copyright owner]`
-Sky: sed -i '' 's/[yyyy] [name of copyright owner]/2023 Copilot/g' FILENAME`
-The last suggested command of the assistant failed with the error: `sed: FILENAME: No such file or directory`
-Sky: sed -i '' 's/[yyyy] [name of copyright owner]/2023 Copilot/g' LICENSE`
 """
 
 
 def user_message(context: Context):
     return f"""
 The user requires a command for the following prompt: `{context.command}`
-The command the user is looking for is:`"""
+The command (or 'Command not found') the user is looking for is:`"""
 
 
 def build_conversation(context: Context) -> Conversation:
     return Conversation(
         messages=[
             {"role": "system", "content": system_message(context)},
+            {"role": "system", "name": "example_user", "content": "list files in directory"},
+            {"role": "system", "name": "example_assistant", "content": "ls -la`"},
+            {"role": "system", "name": "example_user", "content": "list all branches"},
+            {"role": "system", "name": "example_assistant", "content": "git branch -a`"},
+            {"role": "system", "name": "example_user", "content": "find all txt and wav files in the home directory"},
+            {"role": "system", "name": "example_assistant", "content": "find . -name \"*.txt\" -o -name \"*.wav\"`"},
+            {"role": "system", "name": "example_user", "content": "I meant mp4 files not wav files"},
+            {"role": "system", "name": "example_assistant", "content": "find . -name \"*.txt\" -o -name \"*.mp4\"`"},
+            {"role": "system", "name": "example_user", "content": "google GPT and write the results into Excel"},
+            {"role": "system", "name": "example_assistant", "content": "Command not found"},
+            {"role": "system", "name": "example_user", "content": "update Copyright [yyyy] [name of copyright owner]"},
+            {"role": "system", "name": "example_assistant",
+             "content": "sed -i '' 's/[yyyy] [name of copyright owner]/2023 Copilot/g' FILENAME`"},
+            {"role": "system", "name": "example_user", "content": "sed: FILENAME: No such file or directory"},
+            {"role": "system", "name": "example_assistant",
+             "content": "sed -i '' 's/[yyyy] [name of copyright owner]/2023 Copilot/g' LICENSE`"},
             {"role": "user", "content": user_message(context)},
         ],
         model=context.model

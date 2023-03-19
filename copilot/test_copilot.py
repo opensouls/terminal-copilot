@@ -61,7 +61,7 @@ class TestCopilotModelInt(unittest.TestCase):
     def test_model_should_decline_unrelated_requests(self, mock_terminal_menu, fake_stdout):
 
         for prompt, expected_command in [
-            ["are you an AI", not_found],
+            ["are you an AI that writes haikus for the terminal prompts of the user", not_found],
         ]:
             with self.subTest(prompt=prompt, expected_command=expected_command):
                 # arrange
