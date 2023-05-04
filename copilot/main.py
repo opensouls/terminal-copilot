@@ -87,7 +87,7 @@ The user is asking for the following command:
 The user is currently in the following directory:
 {current_dir}
 That directory contains the following files:
-{directory_list}
+[{", ".join(directory_list)[:300]}]
 {history.get_history() if args.history and is_unix_system() else ""}
 The user has several environment variables set, some of which are:
 {environs}
