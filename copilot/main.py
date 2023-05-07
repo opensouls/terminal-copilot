@@ -52,6 +52,7 @@ def main():
     current_dir = os.getcwd()
     directory_list = os.listdir()
 
+
     context = Context(
         shell=shell,
         operating_system=operating_system,
@@ -62,6 +63,31 @@ def main():
         git=git_info() if args.git else "",
         model=args.model,
     )
+
+    prompt = f"""
+You are an AI Terminal Copilot. Your job is to help users find the right terminal command in a {shell} on {operating_system}.
+
+The user is asking for the following command:
+'{" ".join(args.command)}'
+
+The user is currently in the following directory:
+{current_dir}
+That directory contains the following files:
+[{", ".join(directory_list)[:300]}]
+{history.get_history() if args.history and is_unix_system() else ""}
+The user has several environment variables set, some of which are:
+{environs}
+{git_info() if args.git else ""}
+"""
+    if (
+            args.alias
+            and is_unix_system()
+    ):
+        prompt += f"""
+The user has the following aliases set:
+{subprocess.run(["alias"], capture_output=True, shell=True).stdout.decode("utf-8")}
+"""
+    prompt += """
 
     conversation = build_conversation(context)
 
