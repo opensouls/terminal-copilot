@@ -74,7 +74,7 @@ class TestCopilotModelInt(unittest.TestCase):
                 self.assertIn(expected_command, output)
 
     def execute_prompt(self, fake_stdout, prompt):
-        sys.argv = ["copilot", prompt]
+        sys.argv = ["copilot", prompt, "--no-stream"]
         main()
         output = fake_stdout.getvalue()
         return output
@@ -95,7 +95,7 @@ class TestCopilotModelInt(unittest.TestCase):
                 terminal_menu_mock = MagicMock()
                 terminal_menu_mock.show.side_effect = [REFINE, NO_EXECUTION]
                 mock_terminal_menu.return_value = terminal_menu_mock
-                sys.argv = ["copilot", prompt]
+                sys.argv = ["copilot", prompt, "--no-stream"]
                 # act
                 main()
                 output = fake_stdout.getvalue()

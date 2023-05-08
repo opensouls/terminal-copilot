@@ -1,7 +1,5 @@
 # Program to serve as a terminal copilot for the user
-import enum
 import sys
-import argparse
 import subprocess
 import openai
 import pyperclip
@@ -9,10 +7,10 @@ import os
 from urllib.parse import quote
 import platform
 import json
-import re
 
 from copilot import history
 from conversation import Conversation
+from open_ai_adapter import request_cmds, stream_cmd_into_terminal
 from parse_os import parse_operating_system, OperatingSystem
 from parse_args import parse_terminal_copilot_args
 from messages_builder import Context, build_conversation
@@ -30,7 +28,6 @@ elif platform.system().lower().startswith("win"):
 
 def main():
     args = parse_terminal_copilot_args()
-
     if args.verbose:
         print("Verbose mode enabled")
 
@@ -102,21 +99,30 @@ The user has the following aliases set:
         print("To set the environment variable, run:")
         print("export OPENAI_API_KEY=<your key>")
         sys.exit(1)
-    cmds = request_cmds(conversation, n=int(args.count) if args.json and args.count else 1)
 
     if args.json:
+        cmds = request_cmds(conversation, n=int(args.count) if args.json and args.count else 1)
         print(json.dumps({
             "commands": cmds,
             "explainshell_links": list(map(get_explainshell_link, cmds))
         }))
     else:
-        show_command_options(conversation, cmds[0])
+        cmds = fetch_and_print_cmd(conversation, args)
+        show_command_options(conversation, cmds, args)
 
 
-def show_command_options(conversation: Conversation, cmd):
+def fetch_and_print_cmd(conversation, args):
+    if args.no_stream:
+        cmds = request_cmds(conversation, n=int(args.count) if args.json and args.count else 1)[0]
+        print(f"\033[94m> {cmds}\033[0m")
+    else:
+        cmds = stream_cmd_into_terminal(conversation)
+    return cmds
+
+
+def show_command_options(conversation: Conversation, cmd, args):
     operating_system = platform.system()
 
-    print(f"\033[94m> {cmd}\033[0m")
     options = ["execute", "refine", "copy", "explainshell", "show more options"]
 
     if is_unix_system():
@@ -134,9 +140,9 @@ def show_command_options(conversation: Conversation, cmd):
         menu_entry_index = options.index(answers["menu_entry_index"])
 
     if menu_entry_index == 0:
-        execute(conversation, cmd)
+        execute(conversation, cmd, args)
     elif menu_entry_index == 1:
-        refine_command(conversation, cmd)
+        refine_command(conversation, cmd, args)
     elif menu_entry_index == 2:
         print("> copied")
         pyperclip.copy(cmd)
@@ -156,7 +162,7 @@ def read_input():
     return input("> ")
 
 
-def refine_command(conversation: Conversation, cmd):
+def refine_command(conversation: Conversation, cmd, args):
     refinement = read_input()
     conversation.messages.append({"role": "assistant", "content": cmd})
     refinement_command = f"""The user requires a command for the following prompt: `{refinement}`.
@@ -164,11 +170,11 @@ ONLY OUTPUT THE COMMAND. No description, no explanation, no nothing.
 Do not add any text in front of it and do not add any text after it.
 The command the user is looking for is: `"""
     conversation.messages.append({"role": "user", "content": refinement_command})
-    cmd = request_cmds(conversation, n=1)[0]
-    show_command_options(conversation, cmd)
+    cmd = fetch_and_print_cmd(conversation, args)
+    show_command_options(conversation, cmd, args)
 
 
-def execute(conversation: Conversation, cmd):
+def execute(conversation: Conversation, cmd, args):
     try:
         result = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf-8')
         out = result.stdout
@@ -176,23 +182,23 @@ def execute(conversation: Conversation, cmd):
         print(out)
         print(error)
         if error != "" and error is not None:
-            refine_failed_command(conversation, cmd, error)
+            refine_failed_command(conversation, cmd, error, args)
         else:
             history.save(cmd)
     except Exception as e:
         print(e)
-        refine_failed_command(conversation, cmd, str(e))
+        refine_failed_command(conversation, cmd, str(e), args)
 
 
-def refine_failed_command(conversation: Conversation, cmd, error):
+def refine_failed_command(conversation: Conversation, cmd, error, args):
     error = error[:300]
     conversation.messages.append({"role": "assistant", "content": cmd})
     failed_command = f"The last suggested command of the assistant failed with the error: `{error}`." \
                      f"The corrected command (and only the command) is:`"
     conversation.messages.append({"role": "user", "content": failed_command})
-    cmd = request_cmds(conversation, n=1)[0]
     print("The last command failed. Here is suggested corrected command:")
-    show_command_options(conversation, cmd)
+    cmd = fetch_and_print_cmd(conversation, args)
+    show_command_options(conversation, cmd, args)
 
 
 def show_more_cmd_options(conversation: Conversation):
@@ -220,31 +226,8 @@ def show_more_cmd_options(conversation: Conversation):
         show_command_options(conversation, cmds[cmd_menu_entry_index])
 
 
-def request_cmds(conversation: Conversation, n=1):
-    response = openai.ChatCompletion.create(
-        model=conversation.model.value,
-        messages=conversation.messages,
-        temperature=0,
-        max_tokens=1000,
-        top_p=0.2,
-        stop=["`"],
-        frequency_penalty=0,
-        presence_penalty=0,
-        n=n,
-    )
-    choices = response.choices
-    cmds = strip(choices)
-    if len(cmds) > 1:
-        cmds = list(dict.fromkeys(cmds))
-    return cmds
-
-
 def get_explainshell_link(cmd):
     return "https://explainshell.com/explain?cmd=" + quote(cmd)
-
-
-def strip(choices):
-    return [re.sub('`[^`]*(`|$)', r'\1', choice.message.content) for choice in choices]
 
 
 def git_info():
