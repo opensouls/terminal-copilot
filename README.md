@@ -36,6 +36,9 @@ Terminal-copilot can be called with optional command line arguments:
 - `-hist`, `--history`: Enables the inclusion of terminal history in the prompt sent to the OpenAI API. May potentially send sensitive information to OpenAI and increase the number of tokens used.
 - `-j`, `--json`: Output data as JSON instead of using an interactive prompt.
 - `-c`, `--count`: The number of commands to output when JSON output is specified.
+- `-c`, `--count`: The number of commands to output when JSON output is specified.
+- `-m`, `--model`: The model to use. Defaults to gpt-3.5-turbo.
+- `-ns`, `--no-stream`: Disable streaming the command into the terminal (by default, streaming is enabled).
 
 ### Requirements
 Python 3.7+
