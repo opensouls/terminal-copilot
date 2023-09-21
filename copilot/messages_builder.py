@@ -62,10 +62,12 @@ def system_messages(context: Context) -> list:
     return messages
 
 
-def build_conversation(context: Context) -> Conversation:
+def build_conversation(context: Context, usermessage: str) -> Conversation:
     messages = []
     messages.extend(system_messages(context))
-    messages.append({"role": "user", "content": user_message(context)})
+    if not usermessage:
+        usermessage = user_message(context)
+    messages.append({"role": "user", "content": usermessage})
     return Conversation(
         messages=messages,
         model=context.model

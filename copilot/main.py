@@ -14,7 +14,7 @@ from copilot.open_ai_adapter import request_cmds, stream_cmd_into_terminal
 from copilot.parse_os import parse_operating_system, OperatingSystem
 from copilot.parse_args import parse_terminal_copilot_args
 from copilot.messages_builder import Context, build_conversation
-
+from copilot.question import ask_question
 
 def is_unix_system():
     return platform.system().lower().startswith("lin") or platform.system().lower().startswith("dar")
@@ -30,6 +30,8 @@ def main():
     args = parse_terminal_copilot_args()
     if args.verbose:
         print("Verbose mode enabled")
+
+    setup_openai_key()
 
     # TODO to get more terminal context to work with..
     # TODO save history of previous user questions and answers
@@ -49,6 +51,8 @@ def main():
     current_dir = os.getcwd()
     directory_list = os.listdir()
 
+    # if args.question:
+    #     args.model = 'gpt-4'
 
     context = Context(
         shell=shell,
@@ -61,43 +65,17 @@ def main():
         model=args.model,
     )
 
-    prompt = f"""
-You are an AI Terminal Copilot. Your job is to help users find the right terminal command in a {shell} on {operating_system}.
-
-The user is asking for the following command:
-'{" ".join(args.command)}'
-
-The user is currently in the following directory:
-{current_dir}
-That directory contains the following files:
-[{", ".join(directory_list)[:300]}]
-{history.get_history() if args.history and is_unix_system() else ""}
-The user has several environment variables set, some of which are:
-{environs}
-{git_info() if args.git else ""}
-"""
-    if (
-            args.alias
-            and is_unix_system()
-    ):
-        prompt += f"""
-The user has the following aliases set:
-{subprocess.run(["alias"], capture_output=True, shell=True).stdout.decode("utf-8")}
-"""
+    # check if the -q flag is set for general questions
+    if args.question:
+        # In this case just send the question to GPT-4 and print the response
+        ask_question(context, args.command)
+        sys.exit(0)
 
     conversation = build_conversation(context)
 
     if args.verbose:
         print("Sent this conversation to OpenAI:")
         print(conversation)
-
-    openai.api_key = os.environ.get("OPENAI_API_KEY")
-    if openai.api_key is None:
-        print("To use copilot please set the OPENAI_API_KEY environment variable")
-        print("You can get an API key from https://beta.openai.com/account/api-keys")
-        print("To set the environment variable, run:")
-        print("export OPENAI_API_KEY=<your key>")
-        sys.exit(1)
 
     if args.json:
         cmds = request_cmds(conversation, n=int(args.count) if args.json and args.count else 1)
@@ -108,6 +86,16 @@ The user has the following aliases set:
     else:
         cmds = fetch_and_print_cmd(conversation, args)
         show_command_options(conversation, cmds, args)
+
+
+def setup_openai_key():
+    openai.api_key = os.environ.get("OPENAI_API_KEY")
+    if openai.api_key is None:
+        print("To use copilot please set the OPENAI_API_KEY environment variable")
+        print("You can get an API key from https://beta.openai.com/account/api-keys")
+        print("To set the environment variable, run:")
+        print("export OPENAI_API_KEY=<your key>")
+        sys.exit(1)
 
 
 def fetch_and_print_cmd(conversation, args):

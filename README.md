@@ -12,6 +12,9 @@ terminal-copilot will then display the correct syntax for the command you need:
 ```find . -name "*.txt"```
 With options to execute, copy, or explain the proposed terminal command.
 
+You can also use the copilot to ask a general question to gpt4 from your command line using the -q option
+```copilot -q "What is the best drink for late night coding?"```
+
 ### Installation
 To use terminal-copilot, you must first install it on your system. The easiest way to do this is using pip:
 ```pip install terminal-copilot```
@@ -26,6 +29,9 @@ Here are some examples of how you can use terminal-copilot:
 3. `copilot install the openai package for python`
 4. `copilot clean up my docker images`
 
+or you can ask a general question to gpt4 from your command line using the -q option
+`copilot -q Why is 42 the meaning of life`
+(note that question marks are not supported atm..)
 
 ### Arguments
 Terminal-copilot can be called with optional command line arguments:

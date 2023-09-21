@@ -41,5 +41,8 @@ def parse_terminal_copilot_args():
         default=False,
         help="Disable streaming the command into the terminal (by default, streaming is enabled)."
     )
+    parser.add_argument(
+        "-q", "--question", action="store_true", default=False, help="Ask a general question to GPT-4."
+    )
     args = parser.parse_args()
     return args
