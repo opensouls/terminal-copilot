@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
-from conversation import Model
-from parse_os import OperatingSystem
+from copilot.conversation import Model
+from copilot.parse_os import OperatingSystem
 
-
+# dataclass for context
 @dataclass
 class Context:
     shell: str

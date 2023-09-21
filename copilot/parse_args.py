@@ -1,6 +1,6 @@
 import argparse
 
-from conversation import argparse_model_type, Model
+from copilot.conversation import argparse_model_type, Model
 
 
 def parse_terminal_copilot_args():

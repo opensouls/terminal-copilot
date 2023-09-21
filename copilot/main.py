@@ -9,11 +9,11 @@ import platform
 import json
 
 from copilot import history
-from conversation import Conversation
-from open_ai_adapter import request_cmds, stream_cmd_into_terminal
-from parse_os import parse_operating_system, OperatingSystem
-from parse_args import parse_terminal_copilot_args
-from messages_builder import Context, build_conversation
+from copilot.conversation import Conversation
+from copilot.open_ai_adapter import request_cmds, stream_cmd_into_terminal
+from copilot.parse_os import parse_operating_system, OperatingSystem
+from copilot.parse_args import parse_terminal_copilot_args
+from copilot.messages_builder import Context, build_conversation
 
 
 def is_unix_system():

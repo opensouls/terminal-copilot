@@ -10,7 +10,7 @@ long_description = readme
 
 setup(
         name ='terminal-copilot',
-        version ='1.2.2',
+        version ='1.3.3',
         author ='Methexis',
         author_email ='joelkronander@gmail.com',
         url ='https://github.com/Methexis-Inc/terminal-copilot',
@@ -24,12 +24,12 @@ setup(
                 'copilot=copilot.main:main'
             ]
         },
-        classifiers =(
+        classifiers =[
             "Programming Language :: Python :: 3",
             "License :: OSI Approved :: Apache Software License",
             "Operating System :: OS Independent",
-        ),
-        keywords ='terminal copilot openai gpt3',
+        ],
+        keywords ='terminal copilot openai gpt3 gpt4 gpt3.5',
         install_requires = requirements,
         zip_safe = False
 )

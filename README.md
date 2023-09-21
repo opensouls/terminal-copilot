@@ -36,7 +36,6 @@ Terminal-copilot can be called with optional command line arguments:
 - `-hist`, `--history`: Enables the inclusion of terminal history in the prompt sent to the OpenAI API. May potentially send sensitive information to OpenAI and increase the number of tokens used.
 - `-j`, `--json`: Output data as JSON instead of using an interactive prompt.
 - `-c`, `--count`: The number of commands to output when JSON output is specified.
-- `-c`, `--count`: The number of commands to output when JSON output is specified.
 - `-m`, `--model`: The model to use. Defaults to gpt-3.5-turbo.
 - `-ns`, `--no-stream`: Disable streaming the command into the terminal (by default, streaming is enabled).
 
@@ -59,5 +58,9 @@ Thank you for considering contributing to terminal-copilot! Together, we can mak
 3. `python setup.py install`
 
 ### Packaging for PyPi
-1. `python setup.py sdist bdist_wheel`
-2. `twine upload dist/*`
+First make sure you have `pip install wheel` and `pip install twine` installed.
+Then run the following commands:
+0. Modify version in `setup.py`
+1. `rm -rf dist`
+2. `python setup.py sdist bdist_wheel`
+3. `twine upload dist/*`

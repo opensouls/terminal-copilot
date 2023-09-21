@@ -2,8 +2,8 @@ import sys
 
 import openai
 
-from conversation import Conversation
-from strip import strip_cmd, strip_choices
+from copilot.conversation import Conversation
+from copilot.strip import strip_cmd, strip_choices
 
 
 def _create_chat_completion(conversation, n, stream=False):

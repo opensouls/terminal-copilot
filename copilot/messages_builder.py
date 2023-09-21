@@ -1,7 +1,7 @@
-from context import Context
-from conversation import Conversation
-from sample_conversations import unix_fish_sample_conversations
-from sample_conversations import unix_bourne_sample_conversations, windows_cmd_sample_conversations
+from copilot.context import Context
+from copilot.conversation import Conversation
+from copilot.sample_conversations import unix_fish_sample_conversations
+from copilot.sample_conversations import unix_bourne_sample_conversations, windows_cmd_sample_conversations
 
 
 def user_message(context: Context):
