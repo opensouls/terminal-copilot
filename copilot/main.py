@@ -84,7 +84,6 @@ The user has several environment variables set, some of which are:
 The user has the following aliases set:
 {subprocess.run(["alias"], capture_output=True, shell=True).stdout.decode("utf-8")}
 """
-    prompt += """
 
     conversation = build_conversation(context)
 
