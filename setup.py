@@ -10,7 +10,7 @@ long_description = readme
 
 setup(
         name ='terminal-copilot',
-        version ='1.5.0',
+        version ='1.5.3',
         author ='Methexis',
         author_email ='joelkronander@gmail.com',
         url ='https://github.com/Methexis-Inc/terminal-copilot',
