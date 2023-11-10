@@ -28,6 +28,7 @@ Here are some examples of how you can use terminal-copilot:
 2. `copilot find all mp3 files in my home directory`
 3. `copilot install the openai package for python`
 4. `copilot clean up my docker images`
+5. `copilot list my running k8s pods with tag 'awesome'`
 
 or you can ask a general question to gpt4 from your command line using the -q option
 `copilot -q Why is 42 the meaning of life`
