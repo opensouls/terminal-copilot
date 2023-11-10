@@ -1,7 +1,11 @@
 from copilot.context import Context
 from copilot.conversation import Conversation
 from copilot.sample_conversations import unix_fish_sample_conversations
-from copilot.sample_conversations import unix_bourne_sample_conversations, windows_cmd_sample_conversations
+from copilot.sample_conversations import (
+    unix_bourne_sample_conversations,
+    windows_cmd_sample_conversations,
+)
+from typing import Optional
 
 
 def user_message(context: Context):
@@ -60,13 +64,12 @@ def system_messages(context: Context) -> list:
     return messages
 
 
-def build_conversation(context: Context, usermessage: str) -> Conversation:
+def build_conversation(
+    context: Context, usermessage: Optional[str] = None
+) -> Conversation:
     messages = []
     messages.extend(system_messages(context))
     if not usermessage:
         usermessage = user_message(context)
     messages.append({"role": "user", "content": usermessage})
-    return Conversation(
-        messages=messages,
-        model=context.model
-    )
+    return Conversation(messages=messages, model=context.model)
