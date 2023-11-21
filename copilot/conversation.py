@@ -1,6 +1,7 @@
 import argparse
 from dataclasses import dataclass
 from enum import Enum
+from typing import List, Dict
 
 
 class Model(Enum):
@@ -18,5 +19,5 @@ def argparse_model_type(model_str):
 
 @dataclass
 class Conversation:
-    messages: list[dict]
+    messages: List[Dict]
     model: Model
